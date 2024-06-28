@@ -11,6 +11,8 @@ public:
     AConsole(std::shared_ptr<std::string> process);
     ~AConsole() = default;
 
+    bool isActive() { return this->_active; }
+
     virtual void run();
     virtual void stop();
 
