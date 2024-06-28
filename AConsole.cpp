@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 #include <windows.h>
 #include <tuple>
 
@@ -13,10 +14,16 @@ AConsole::AConsole(std::shared_ptr<std::string> name) {
 
 void AConsole::run() {
     std::cout << "Starting " + *this->_process << std::endl;
+    this->_active = true;
+    std::this_thread::sleep_for(std::chrono::milliseconds(25));
+    this->stop();
 }
 
 void AConsole::stop() {
-    std::cout << "Stopping " + *this->_process << std::endl;
+    if (this->_active) {
+        this->_active = false;
+        std::cout << "Stopping " + *this->_process << std::endl;
+    }
 }
 
 void AConsole::draw() {
