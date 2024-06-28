@@ -11,6 +11,14 @@ AConsole::AConsole(std::shared_ptr<std::string> name) {
     this->_process = name;
 }
 
+void AConsole::run() {
+    std::cout << "Starting " + *this->_process << std::endl;
+}
+
+void AConsole::stop() {
+    std::cout << "Stopping " + *this->_process << std::endl;
+}
+
 void AConsole::draw() {
     std::cout << *this->_process << std::endl;
     std::tuple<short, short> temp = this->getWindowSize();

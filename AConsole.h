@@ -11,6 +11,9 @@ public:
     AConsole(std::shared_ptr<std::string> process);
     ~AConsole() = default;
 
+    virtual void run();
+    virtual void stop();
+
 protected:
     virtual void draw();
     void SetCursorPosition(short row, short col);
