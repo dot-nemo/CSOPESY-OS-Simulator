@@ -1,5 +1,6 @@
 #pragma once
 #ifndef ACONSOLE_H
+#define ACONSOLE_H
 
 #include <memory>
 #include <string>
