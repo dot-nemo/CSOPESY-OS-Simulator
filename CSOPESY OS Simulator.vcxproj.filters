@@ -9,22 +9,28 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Source Files\Console">
+      <UniqueIdentifier>{d6318518-f9b9-43af-9588-ad2c177b9c8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console\Manager">
+      <UniqueIdentifier>{8a010acd-2e7c-4610-b899-08c9c9311fe8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AConsole.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Console</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Console\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Console</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Console\Manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

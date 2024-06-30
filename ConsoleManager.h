@@ -1,5 +1,6 @@
 #pragma once
 #ifndef CONSOLEMANAGER_H
+#define CONSOLEMANAGER_H
 
 #include "AConsole.h"
 #include <chrono>
