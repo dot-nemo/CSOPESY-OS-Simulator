@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include "MainConsole.h"
 
 
 ConsoleManager* ConsoleManager::ptr = nullptr;
@@ -57,9 +58,8 @@ void ConsoleManager::switchConsole(std::string processName) {
 }
 
 ConsoleManager::ConsoleManager() {
-    this->_mainConsole = std::make_shared<AConsole>(std::make_shared<std::string>("Main"));
+    this->_mainConsole = std::make_shared<MainConsole>(MainConsole(this));
     this->_current = this->_mainConsole;
-    this->_current->run();
 }
 
 ConsoleManager::~ConsoleManager() {}
