@@ -77,8 +77,8 @@ void MarqueeConsole::draw() {
 		PrintAtCoords(y, x, message);
 		SetCursorPosition(bottom + 1, left);
 		std::cout << this->previous;
-		std::cout << "Enter a command for MARQUEE_CONSOLE: " << this->input << std::endl;
-		SetCursorPosition(bottom + 1 + n, left + 37 + this->input.size());
+		std::cout << "root\\marquee:\\> " << this->input << std::endl;
+		SetCursorPosition(bottom + 1 + n, left + 16 + this->input.size());
 
 		if (moveUp) {
 			y--;
@@ -109,11 +109,11 @@ void MarqueeConsole::processCommand() {
 		this->stop();
 	}
 	else if (this->input == "") {
-		this->previous += "Enter a command for MARQUEE_CONSOLE: \n";
+		this->previous += "root\\marquee:\\> \n";
 	}
 	else {
-		this->previous += "Enter a command for MARQUEE_CONSOLE: " + this->input + "\n";
-		this->previous += "Command processed for MARQUEE_CONSOLE: " + this->input + "\n";
+		this->previous += "root\\marquee:\\> " + this->input + "\n";
+		this->previous += "Command processed: " + this->input + "\n";
 	}
 }
 

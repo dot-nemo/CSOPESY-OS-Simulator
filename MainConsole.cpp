@@ -41,7 +41,7 @@ void MainConsole::run() {
 	std::string input;
 	this->printHeader();
     while (this->_active) {
-		std::cout << "Enter a command: ";
+		std::cout << "root:\\> ";
 		std::getline(std::cin, input);
 		std::string command = input.substr(0, input.find(SPACE));
 		input.erase(0, input.find(SPACE) + 1);
