@@ -19,6 +19,7 @@ public:
     static void initialize();
     static void destroy();
 
+    void start();
     bool newConsole(Process_ process, AConsole_ console = nullptr);
     void switchConsole(std::string processName);
 

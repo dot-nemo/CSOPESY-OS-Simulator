@@ -19,6 +19,10 @@ void ConsoleManager::destroy() {
     ConsoleManager::ptr = nullptr;
 }
 
+void ConsoleManager::start() {
+    this->_current->run();
+}
+
 // TODO: Change process from string to actual process
 bool ConsoleManager::newConsole(Process_ process, AConsole_ console) {
     if (this->_consoleMap.find(*process) != this->_consoleMap.end()) {
