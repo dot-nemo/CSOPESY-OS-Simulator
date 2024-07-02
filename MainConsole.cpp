@@ -1,19 +1,60 @@
+#include "AConsole.h"
+#include "ConsoleManager.h"
 #include "MainConsole.h"
 #include <iostream>
+#include <memory>
+#include <sstream>
 #include <string>
+#include <vector>
 
 #define SPACE " "
 
 
+MainConsole::MainConsole(ConsoleManager* conman) : AConsole(std::make_shared<std::string>("MAIN_CONSOLE")) {
+	// SCREEN
+	this->_commandMap["screen"] = [conman](argType arguments) { 
+		if (arguments.size() > 2) {
+			std::cout << "Too many strings!" << std::endl;
+			return;
+		}
+		if (arguments.size() == 1) {
+			std::cout << "No process specified." << std::endl;
+			return;
+		}
+		if (arguments.size() == 0) {
+			std::cout << "TODO: help for screen" << std::endl;
+			return;
+		}
+		if (arguments.at(0) == "-s") {
+			conman->switchConsole(arguments.at(1));
+		}
+	};
+}
+
 void MainConsole::run() {
     this->_active = true;
 	std::string input;
+	this->printHeader();
     while (this->_active) {
-		this->printHeader();
 		std::cout << "Enter a command: ";
 		std::getline(std::cin, input);
-		std::string token = input.substr(0, input.find(SPACE));
-		this->stop();
+		std::string command = input.substr(0, input.find(SPACE));
+		input.erase(0, input.find(SPACE) + 1);
+		if (command == "exit") {
+			this->stop();
+			return;
+		}
+		if (this->_commandMap.find(command) == this->_commandMap.end())
+			std::cout << "'" << command << "' is not recognized." << std::endl;
+		else {
+			std::stringstream tokens(input);
+			std::vector<std::string> arguments;
+			std::string token;
+			while (std::getline(tokens, token, ' ')) {
+				arguments.push_back(token);
+			}
+			this->_commandMap[command](arguments);
+		}
     }
 }
 

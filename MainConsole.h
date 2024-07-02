@@ -3,13 +3,19 @@
 #define MAINCONSOLE_H
 
 #include "AConsole.h"
+#include "ConsoleManager.h"
+#include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
+
+typedef const std::vector<std::string>& argType;
 
 
 class MainConsole : public AConsole {
 public:
-    MainConsole() : AConsole(std::make_shared<std::string>("MAIN_CONSOLE")) {};
+    MainConsole(ConsoleManager* conman);
     ~MainConsole() = default;
     void run() override;
     void stop() override;
@@ -17,6 +23,8 @@ public:
 private:
     void draw() override;
     void printHeader();
+
+    std::unordered_map<std::string, std::function<void(argType)>> _commandMap;
 };
 
 #endif // !MAINCONSOLE_H
