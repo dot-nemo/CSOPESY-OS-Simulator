@@ -1,6 +1,7 @@
 #include "AConsole.h"
 #include "ConsoleManager.h"
 #include "MainConsole.h"
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -29,9 +30,13 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole(std::make_shared<std
 			conman->switchConsole(arguments.at(1));
 		}
 	};
+	this->_commandMap["marquee"] = [conman](argType arguments) {
+		conman->switchConsole("MARQUEE_CONSOLE");
+	};
 }
 
 void MainConsole::run() {
+	system("cls");
     this->_active = true;
 	std::string input;
 	this->printHeader();
