@@ -15,6 +15,9 @@
     <Filter Include="Source Files\Console\Manager">
       <UniqueIdentifier>{8a010acd-2e7c-4610-b899-08c9c9311fe8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Console\MainConsole">
+      <UniqueIdentifier>{8cda6f9e-5871-4517-8223-109fc74f1a68}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -24,6 +27,9 @@
     <ClCompile Include="ConsoleManager.cpp">
       <Filter>Source Files\Console\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="MainConsole.cpp">
+      <Filter>Source Files\Console\MainConsole</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h">
@@ -31,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="ConsoleManager.h">
       <Filter>Source Files\Console\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="MainConsole.h">
+      <Filter>Source Files\Console\MainConsole</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
