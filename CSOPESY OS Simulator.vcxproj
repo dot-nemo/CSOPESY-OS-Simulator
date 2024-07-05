@@ -27,6 +27,7 @@
     <ClCompile Include="MarqueeConsole.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="ProcessConsole.cpp" />
     <ClCompile Include="Scheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +39,7 @@
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
+    <ClInclude Include="ProcessConsole.h" />
     <ClInclude Include="Scheduler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
