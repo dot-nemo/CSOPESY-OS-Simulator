@@ -15,28 +15,21 @@ class Scheduler {
 public:
     static Scheduler* get();
 
-    void initialize();
     void start();
     void stop();
     void destroy();
+    void initialize(int cpuCount);
+    void addProcess(Process process);
+    
+
     void printStatus();
 private:
     Scheduler();
     ~Scheduler() = default;
 
-    void run();
+    virtual void run();
 
     static Scheduler* _ptr;
-
-    int _numCpu;
-    string _scheduler;
-    int _quantumCycle;
-    bool _preemptive;
-    int _batchProcessFreq;
-    int _minIns;
-    int _maxIns;
-    int _delaysPerExec;
-    bool running = false;
 
     queue<shared_ptr<Process>> _readyQueue;
     vector<shared_ptr<CPU>> _cpuList;
