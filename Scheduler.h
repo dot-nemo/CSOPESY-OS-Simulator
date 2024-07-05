@@ -7,7 +7,7 @@
 #include <queue>
 #include <vector>
 
-#include "Cpu.h"
+#include "CPU.h"
 #include "Process.h"
 
 using namespace std;
@@ -18,6 +18,8 @@ public:
     void initialize();
     void start();
     void stop();
+    void destroy();
+    void printStatus();
 private:
     Scheduler();
     ~Scheduler() = default;
@@ -37,7 +39,7 @@ private:
     bool running = false;
 
     queue<shared_ptr<Process>> _readyQueue;
-    vector<shared_ptr<Cpu>> _cpuList;
+    vector<shared_ptr<CPU>> _cpuList;
     vector<shared_ptr<Process>> _processList;
 
 };

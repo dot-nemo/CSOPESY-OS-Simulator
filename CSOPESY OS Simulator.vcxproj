@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="AConsole.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
-    <ClCompile Include="Cpu.cpp" />
+    <ClCompile Include="CPU.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="Process.cpp" />
@@ -30,7 +30,7 @@
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
     <ClInclude Include="ConsoleManager.h" />
-    <ClInclude Include="Cpu.h" />
+    <ClInclude Include="CPU.h" />
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
