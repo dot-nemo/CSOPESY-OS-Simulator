@@ -11,7 +11,7 @@ enum CommandType {
 
 class ICommand {
 public:
-    virtual void execute(int core) = 0;
+    virtual void execute(int core, std::string filename) = 0;
 
     int _pid;
     CommandType _type;

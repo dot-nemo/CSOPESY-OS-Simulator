@@ -13,6 +13,8 @@
 using namespace std;
 class Scheduler {
 public:
+    static Scheduler* get();
+
     void initialize();
     void start();
     void stop();
