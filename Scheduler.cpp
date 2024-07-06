@@ -27,25 +27,25 @@ void Scheduler::initialize(int cpuCount) {
     }
 }
 
-void Scheduler::startFCFS() {
+void Scheduler::startFCFS(int delay) {
 	if (this->running == false) {
 		this->running = true;
-		std::thread t(&Scheduler::runFCFS, this);
+		std::thread t(&Scheduler::runFCFS, this, delay);
 		t.detach();
 	}
 }
-void Scheduler::startSJF() {
+void Scheduler::startSJF(int delay, bool preemptive) {
     if (this->running == false) {
         this->running = true;
-        std::thread t(&Scheduler::runSJF, this);
+        std::thread t(&Scheduler::runSJF, this, delay, preemptive);
         t.detach();
     }
 }
 
-void Scheduler::startRR() {
+void Scheduler::startRR(int delay, int quantumCycles) {
     if (this->running == false) {
         this->running = true;
-        std::thread t(&Scheduler::runRR, this);
+        std::thread t(&Scheduler::runRR, this, delay, quantumCycles);
         t.detach();
     }
 }
@@ -94,11 +94,61 @@ void Scheduler::runFCFS(float delay) { // FCFS
 }
 
 void Scheduler::runSJF(float delay, bool preemptive) {
-
+    if (preemptive) {
+        
+    }
+    else {
+        while (this->running) {
+            this->running = false;
+            for (int i = 0; i < this->_cpuList.size(); i++) {
+                std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+                if (cpu->isReady()) {
+                    if (this->_readyQueue.size() > 0) {
+                        cpu->setProcess(this->_readyQueue.front());
+                        this->_readyQueue.pop();
+                        this->running = true;
+                    }
+                }
+                else {
+                    if (this->running == false) {
+                        std::chrono::duration<float> duration(delay);
+                        std::this_thread::sleep_for(duration);
+                        this->running = true;
+                    }
+                }
+            }
+        }
+    }
 }
 
-void Scheduler::runRR(float delay, int quantumCycles) {
+void Scheduler::runRR(float delay, int quantumCycles) { // RR
+    auto start = std::chrono::steady_clock::now();
+    while (this->running) {
+        this->running = false;
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
 
+        if (elapsed > quantumCycles) {
+            this->running = false;
+            break;
+        }
+
+        for (int i = 0; i < this->_cpuList.size(); i++) {
+            std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+            if (cpu->isReady() && !this->_readyQueue.empty()) {
+                cpu->setProcess(this->_readyQueue.front());
+                this->_readyQueue.pop();
+                this->running = true;
+                start = std::chrono::steady_clock::now(); // Reset start time for the new process
+            }
+        }
+
+        if (!this->running) {
+            std::chrono::duration<float> duration(delay);
+            std::this_thread::sleep_for(duration);
+            this->running = true;
+        }
+    }
 }
 
 

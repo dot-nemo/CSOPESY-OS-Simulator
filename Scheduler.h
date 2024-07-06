@@ -15,9 +15,9 @@ class Scheduler {
 public:
     static Scheduler* get();
 
-    void startFCFS();
-    void startSJF();
-    void startRR();
+    void startFCFS(int delay);
+    void startSJF(int delay, bool preemptive);
+    void startRR(int delay, int quantumCycles);
     void stop();
     void destroy();
     void initialize(int cpuCount);
