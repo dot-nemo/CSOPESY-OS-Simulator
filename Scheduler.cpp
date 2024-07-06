@@ -61,7 +61,7 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
-    if (InitScheduler::_scheduler == "SJF") {
+    if (InitScheduler::_scheduler == "sjf") {
         this->_readyQueueSJF.push(process);
     }
     else {
@@ -163,7 +163,35 @@ void Scheduler::runFCFS(float delay) { // FCFS
 
 void Scheduler::runSJF(float delay, bool preemptive) { // SJF
     if (preemptive) {
-        //todo
+        while (this->running) {
+            this->running = false;
+            for (int i = 0; i < this->_cpuList.size(); i++) {
+                std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+                if (cpu->isReady()) {
+                    if (this->_readyQueueSJF.size() > 0) {
+                        cpu->setProcess(this->_readyQueueSJF.top());
+                        this->_readyQueueSJF.pop();
+                        this->running = true;
+                    }
+                }
+                else {
+                    if (this->running == true) {
+                        if (cpu->getProcess()->getBurst() > this->_readyQueueSJF.top()->getBurst()) {
+                            std::chrono::duration<float> duration(delay);
+                            std::this_thread::sleep_for(duration);
+                            this->_readyQueueSJF.push(cpu->getProcess());
+                            cpu->setProcess(this->_readyQueueSJF.top());
+                            this->_readyQueueSJF.pop();
+                        }
+                    }
+                    if (this->running == false) {
+                        std::chrono::duration<float> duration(delay);
+                        std::this_thread::sleep_for(duration);
+                        this->running = true;
+                    }
+                }
+            }
+        }
     }
     else {
         while (this->running) {
