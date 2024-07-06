@@ -1,4 +1,5 @@
 #include "Scheduler.h"
+#include "InitScheduler.h"
 
 #include <ctime>
 #include <chrono>
@@ -60,7 +61,13 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(Process process) {
-	this->_readyQueue.push(std::make_shared<Process>(process));
+    if (InitScheduler::_scheduler == "SJF") {
+        this->_readyQueueSJF.push(std::make_shared<Process>(process));
+    }
+    else {
+        this->_readyQueue.push(std::make_shared<Process>(process));
+    }
+	
 }
 
 void Scheduler::printStatus() {
@@ -99,19 +106,14 @@ void Scheduler::runSJF(float delay, bool preemptive) { // SJF
         //todo
     }
     else {
-        std::priority_queue<shared_ptr<Process>> readyQueue;
-        while (!this->_readyQueue.empty()) {
-            readyQueue.push(this->_readyQueue.front());
-            this->_readyQueue.pop();
-        }
         while (this->running) {
             this->running = false;
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->isReady()) {
-                    if (readyQueue.size() > 0) {
-                        cpu->setProcess(readyQueue.top());
-                        readyQueue.pop();
+                    if (this->_readyQueueSJF.size() > 0) {
+                        cpu->setProcess(this->_readyQueueSJF.top());
+                        this->_readyQueueSJF.pop();
                         this->running = true;
                     }
                 }

@@ -38,6 +38,7 @@ private:
     queue<shared_ptr<Process>> _readyQueue;
     vector<shared_ptr<CPU>> _cpuList;
     vector<shared_ptr<Process>> _processList;
+    priority_queue<shared_ptr<Process>> _readyQueueSJF;
 
     bool running = false;
 

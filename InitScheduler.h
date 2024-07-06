@@ -1,5 +1,6 @@
 #ifndef INITSCHEDULER_H
 #define INITSCHEDULER_H
+#include "Scheduler.h"
 
 #include <string>
 
@@ -49,7 +50,7 @@ public:
     }
 private:
     int _numCpu;
-    string _scheduler;
+    static string _scheduler;
     int _quantumCycle;
     bool _preemptive;
     float _batchProcessFreq;
@@ -57,6 +58,8 @@ private:
     int _maxIns;
     float _delaysPerExec;
     bool running = false;
+
+    friend class Scheduler;
 };
 
 #endif
