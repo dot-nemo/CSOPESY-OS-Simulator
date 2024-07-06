@@ -56,3 +56,5 @@ bool Process::hasFinished() {
 void Process::setCPUCoreID(int cpuCoreID) {
     this->_cpuCoreID = cpuCoreID;
 }
+
+int Process::nextID = 0;

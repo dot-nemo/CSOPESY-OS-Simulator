@@ -32,6 +32,7 @@ public:
     bool operator<(std::shared_ptr<Process> other) {
         return this->getBurst() > other->getBurst();
     };
+    static int nextID;
 
 private:
     int _pid;
