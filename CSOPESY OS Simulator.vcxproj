@@ -22,6 +22,7 @@
     <ClCompile Include="AConsole.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="InitScheduler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="MarqueeConsole.cpp" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="InitScheduler.h" />
     <ClInclude Include="MainConsole.h" />
     <ClInclude Include="MarqueeConsole.h" />
     <ClInclude Include="CPU.h" />
@@ -41,6 +43,9 @@
     <ClInclude Include="Process.h" />
     <ClInclude Include="ProcessConsole.h" />
     <ClInclude Include="Scheduler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

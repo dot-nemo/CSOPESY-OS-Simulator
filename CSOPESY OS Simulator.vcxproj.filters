@@ -51,6 +51,8 @@
     <ClCompile Include="Scheduler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InitScheduler.cpp">
+      <Filter>Source Files</Filter>
     <ClCompile Include="ProcessConsole.cpp">
       <Filter>Source Files\Console\ProcessConsole</Filter>
     </ClCompile>
@@ -83,6 +85,12 @@
     <ClInclude Include="Scheduler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InitScheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
     <ClInclude Include="ProcessConsole.h">
       <Filter>Source Files\Console\ProcessConsole</Filter>
     </ClInclude>

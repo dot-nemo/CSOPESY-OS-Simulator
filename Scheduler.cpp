@@ -1,11 +1,18 @@
 #include "Scheduler.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <unordered_map>
 
-using namespace std;
+#include <ctime>
+#include <chrono>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <thread>
+
+#include "CPU.h"
+#include "Process.h"
+
+Scheduler::Scheduler() {
+
+}
 
 Scheduler* Scheduler::_ptr = nullptr;
 
@@ -13,40 +20,136 @@ Scheduler* Scheduler::get() {
 	return _ptr;
 }
 
-void Scheduler::initialize() {
-    ifstream inputFile("config.txt");
-    if (!inputFile.is_open()) {
-        cerr << "Failed to open the file." << endl;
-        return;
+void Scheduler::initialize(int cpuCount) {
+    _ptr = new Scheduler();
+    for (int i = 0; i < cpuCount; i++) {
+        _ptr->_cpuList.push_back(std::make_shared<CPU>());
     }
-
-    unordered_map<string, string> config;
-    string line, key, value;
-
-    while (getline(inputFile, line)) {
-        istringstream iss(line);
-        iss >> key >> value;
-        config[key] = value;
-    }
-
-    inputFile.close();
-
-    int num_cpu = stoi(config["num-cpu"]);
-    string scheduler = config["scheduler"].substr(1, config["scheduler"].size() - 2); // Remove quotes
-    int quantum_cycles = stoi(config["quantum-cycles"]);
-    bool preemptive = stoi(config["preemptive"]) == 1;
-    float batch_process_freq = stof(config["batch-process-freq"]);
-    int min_ins = stoi(config["min-ins"]);
-    int max_ins = stoi(config["max-ins"]);
-    float delay_per_exec = stof(config["delay-per-exec"]);
-
-    this->_numCpu = num_cpu;
-    this->_scheduler = scheduler;
-    this->_quantumCycle = quantum_cycles;
-    this->_preemptive = preemptive;
-    this->_batchProcessFreq = batch_process_freq;
-    this->_minIns = min_ins;
-    this->_maxIns = max_ins;
-    this->_delaysPerExec = delay_per_exec;
 }
+
+void Scheduler::startFCFS(int delay) {
+	if (this->running == false) {
+		this->running = true;
+		std::thread t(&Scheduler::runFCFS, this, delay);
+		t.detach();
+	}
+}
+void Scheduler::startSJF(int delay, bool preemptive) {
+    if (this->running == false) {
+        this->running = true;
+        std::thread t(&Scheduler::runSJF, this, delay, preemptive);
+        t.detach();
+    }
+}
+
+void Scheduler::startRR(int delay, int quantumCycles) {
+    if (this->running == false) {
+        this->running = true;
+        std::thread t(&Scheduler::runRR, this, delay, quantumCycles);
+        t.detach();
+    }
+}
+
+void Scheduler::stop() {
+	this->running = false;
+}
+
+void Scheduler::destroy() {
+	delete _ptr;
+}
+
+void Scheduler::addProcess(Process process) {
+	this->_readyQueue.push(std::make_shared<Process>(process));
+}
+
+void Scheduler::printStatus() {
+
+}
+
+void Scheduler::schedulerTest(float batchProcessFreq, int minIns, int maxIns) {
+
+}
+
+void Scheduler::runFCFS(float delay) { // FCFS
+    while (this->running) {
+        this->running = false;
+        for (int i = 0; i < this->_cpuList.size(); i++) {
+            std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+            if (cpu->isReady()) {
+                if (this->_readyQueue.size() > 0) {
+                    cpu->setProcess(this->_readyQueue.front());
+                    this->_readyQueue.pop();
+                    this->running = true;
+                }
+            }
+            else {
+                if (this->running == false) {
+                    std::chrono::duration<float> duration(delay);
+                    std::this_thread::sleep_for(duration);
+                    this->running = true;
+                }
+            }
+        }
+    }
+}
+
+void Scheduler::runSJF(float delay, bool preemptive) {
+    if (preemptive) {
+        
+    }
+    else {
+        while (this->running) {
+            this->running = false;
+            for (int i = 0; i < this->_cpuList.size(); i++) {
+                std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+                if (cpu->isReady()) {
+                    if (this->_readyQueue.size() > 0) {
+                        cpu->setProcess(this->_readyQueue.front());
+                        this->_readyQueue.pop();
+                        this->running = true;
+                    }
+                }
+                else {
+                    if (this->running == false) {
+                        std::chrono::duration<float> duration(delay);
+                        std::this_thread::sleep_for(duration);
+                        this->running = true;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Scheduler::runRR(float delay, int quantumCycles) { // RR
+    auto start = std::chrono::steady_clock::now();
+    while (this->running) {
+        this->running = false;
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
+
+        if (elapsed > quantumCycles) {
+            this->running = false;
+            break;
+        }
+
+        for (int i = 0; i < this->_cpuList.size(); i++) {
+            std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+            if (cpu->isReady() && !this->_readyQueue.empty()) {
+                cpu->setProcess(this->_readyQueue.front());
+                this->_readyQueue.pop();
+                this->running = true;
+                start = std::chrono::steady_clock::now(); // Reset start time for the new process
+            }
+        }
+
+        if (!this->running) {
+            std::chrono::duration<float> duration(delay);
+            std::this_thread::sleep_for(duration);
+            this->running = true;
+        }
+    }
+}
+
+
 
