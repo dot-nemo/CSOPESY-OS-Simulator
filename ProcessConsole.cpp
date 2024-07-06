@@ -10,16 +10,23 @@ void ProcessConsole::run() {
 	if (this->_process->hasFinished()) {
 		return;
 	}
+	system("cls");
     this->_active = true;
+	if (this->_history == "") {
+		this->draw();
+	}
+	else {
+		std::cout << this->_history;
+	}
 	std::string input;
     while (this->_active) {
 		std::cout << "root:\\> ";
 		std::getline(std::cin, input);
-		this->_history += "root:\\> " + input + "\n";
 		if (input == "exit") {
 			this->stop();
 			return;
 		}
+		this->_history += "root:\\> " + input + "\n";
 		if (input == "process-smi") {
 			this->draw();
 			continue;
@@ -29,6 +36,7 @@ void ProcessConsole::run() {
 		}
 		else {
 			std::cout << input << " not recognized." << std::endl;
+			this->_history += input + " not recognized.\n";
 		}
     }
 }
