@@ -52,6 +52,9 @@ void ConsoleManager::switchConsole(std::string processName) {
     // Wait for console to set active to false
     while (this->_current->isActive()) {}
 
+    if (this->_current->canRemove())
+        this->_consoleMap.erase(processName);
+
     this->_current = this->_mainConsole;
     this->_current->run();
 }
