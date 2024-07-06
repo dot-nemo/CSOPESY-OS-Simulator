@@ -18,9 +18,11 @@ public:
     int getProcessCommandCounter() const { return this->_process->getCommandCounter(); };
     int getProcessCommandListSize() const { return this->_process->getCommandListSize(); };
     time_t getProcessArrivalTime() const { return this->_process->getArrivalTime(); };
+    std::shared_ptr<Process> getProcess() { return this->_process; };
 
     void stop() { this->_stopFlag = true; };
     bool isReady() const { return _ready; };
+    void setReady() { this->_ready = true; };
 
 private:
     void run();
