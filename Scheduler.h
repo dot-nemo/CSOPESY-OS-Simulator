@@ -15,21 +15,23 @@ class Scheduler {
 public:
     static Scheduler* get();
 
-    void start();
+    void startFCFS();
+    void startSJF();
+    void startRR();
     void stop();
     void destroy();
     void initialize(int cpuCount);
     void addProcess(Process process);
-    void schedulerTest(float batchProcessFreq);
+    void schedulerTest(float batchProcessFreq, int minIns, int maxIns);
     
     void printStatus();
 private:
     Scheduler();
     ~Scheduler() = default;
 
-    void run(float delay); // FCFS
-    void run(float delay); // SJF
-    void run(float delay); // RR
+    void runFCFS(float delay); // FCFS
+    void runSJF(float delay, bool preemptive); // SJF
+    void runRR(float delay, int quantumCycles); // RR
 
     static Scheduler* _ptr;
 

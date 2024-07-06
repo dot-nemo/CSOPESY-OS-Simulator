@@ -20,12 +20,34 @@ Scheduler* Scheduler::get() {
 	return _ptr;
 }
 
-void Scheduler::start() {
+void Scheduler::initialize(int cpuCount) {
+    _ptr = new Scheduler();
+    for (int i = 0; i < cpuCount; i++) {
+        _ptr->_cpuList.push_back(std::make_shared<CPU>());
+    }
+}
+
+void Scheduler::startFCFS() {
 	if (this->running == false) {
 		this->running = true;
-		std::thread t(&Scheduler::run, this);
+		std::thread t(&Scheduler::runFCFS, this);
 		t.detach();
 	}
+}
+void Scheduler::startSJF() {
+    if (this->running == false) {
+        this->running = true;
+        std::thread t(&Scheduler::runSJF, this);
+        t.detach();
+    }
+}
+
+void Scheduler::startRR() {
+    if (this->running == false) {
+        this->running = true;
+        std::thread t(&Scheduler::runRR, this);
+        t.detach();
+    }
 }
 
 void Scheduler::stop() {
@@ -36,13 +58,6 @@ void Scheduler::destroy() {
 	delete _ptr;
 }
 
-void Scheduler::initialize(int cpuCount) {
-	_ptr = new Scheduler();
-	for (int i = 0; i < cpuCount; i++) {
-		_ptr->_cpuList.push_back(std::make_shared<CPU>());
-	}
-}
-
 void Scheduler::addProcess(Process process) {
 	this->_readyQueue.push(std::make_shared<Process>(process));
 }
@@ -51,11 +66,11 @@ void Scheduler::printStatus() {
 
 }
 
-void Scheduler::schedulerTest(float batchProcessFreq) {
+void Scheduler::schedulerTest(float batchProcessFreq, int minIns, int maxIns) {
 
 }
 
-void Scheduler::run(float delay) {
+void Scheduler::runFCFS(float delay) { // FCFS
     while (this->running) {
         this->running = false;
         for (int i = 0; i < this->_cpuList.size(); i++) {
@@ -76,6 +91,14 @@ void Scheduler::run(float delay) {
             }
         }
     }
+}
+
+void Scheduler::runSJF(float delay, bool preemptive) {
+
+}
+
+void Scheduler::runRR(float delay, int quantumCycles) {
+
 }
 
 
