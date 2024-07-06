@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #define SPACE " "
 
@@ -45,6 +46,14 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE") {
 	};
 	this->_commandMap["marquee"] = [conman](argType arguments) {
 		conman->switchConsole("MARQUEE_CONSOLE");
+	};
+	this->_commandMap["report-util"] = [conman](argType arguments) {
+		std::ofstream out("csopesy-log.txt");
+		std::streambuf* coutbuf = std::cout.rdbuf(); //save old buf
+		std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+		conman->_scheduler->printStatus();
+		std::cout.rdbuf(coutbuf); //reset to standard output again
+		std::cout << "root:\\> Report generated at root:/csopesy-log.txt\n";
 	};
 }
 
