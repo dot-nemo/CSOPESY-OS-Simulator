@@ -22,11 +22,14 @@ Scheduler* Scheduler::get() {
 	return _ptr;
 }
 
-void Scheduler::initialize(int cpuCount) {
+void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns) {
     _ptr = new Scheduler();
     for (int i = 0; i < cpuCount; i++) {
         _ptr->_cpuList.push_back(std::make_shared<CPU>());
     }
+    _ptr->batchProcessFreq = batchProcessFreq;
+    _ptr->minIns = minIns;
+    _ptr->maxIns = maxIns;
 }
 
 void Scheduler::startFCFS(int delay) {
@@ -61,7 +64,7 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
-    if (InitScheduler::_scheduler == "SJF") {
+    if (InitScheduler::_scheduler == "sjf") {
         this->_readyQueueSJF.push(process);
     }
     else {
@@ -73,11 +76,11 @@ void Scheduler::addProcess(std::shared_ptr<Process> process) {
 void Scheduler::printStatus() {
     int cpuReadyCount = 0;
     for (std::shared_ptr<CPU> cpu : this->_cpuList) {
-        if (!cpu->isReady()) {
+        if (cpu->isReady()) {
             cpuReadyCount++;
         }
     }
-    float cpuUtilization = 100.0 * cpuReadyCount / this->_cpuList.size();
+    float cpuUtilization = 100.0 * (this->_cpuList.size() - cpuReadyCount) / this->_cpuList.size();
 
     std::cout << "CPU Utilization: " << cpuUtilization << "%" << std::endl
         << "Cores used: " << this->_cpuList.size() - cpuReadyCount << std::endl
@@ -134,13 +137,28 @@ void Scheduler::printStatus() {
     std::cout << std::endl;
 }
 
-void Scheduler::schedulerTest(float batchProcessFreq, int minIns, int maxIns) {
+void Scheduler::schedulerTest() {
+    this->_testRunning = true;
+    std::thread t(&Scheduler::schedulerRun, this);
+    t.detach();
+}
 
+void Scheduler::schedulerRun() {
+    while (this->_testRunning) {
+        std::uniform_int_distribution<int>  distr(this->minIns, this->maxIns);
+        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), distr);
+        this->addProcess(process);
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(this->batchProcessFreq * 1000)));
+    }
+
+}
+
+void Scheduler::schedulerTestStop() {
+    this->_testRunning = false;
 }
 
 void Scheduler::runFCFS(float delay) { // FCFS
     while (this->running) {
-        this->running = false;
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
             if (cpu->isReady()) {
@@ -163,11 +181,37 @@ void Scheduler::runFCFS(float delay) { // FCFS
 
 void Scheduler::runSJF(float delay, bool preemptive) { // SJF
     if (preemptive) {
-        //todo
+        while (this->running) {
+            for (int i = 0; i < this->_cpuList.size(); i++) {
+                std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+                if (cpu->isReady()) {
+                    if (!this->_readyQueueSJF.empty()) {
+                        cpu->setProcess(this->_readyQueueSJF.top());
+                        this->_readyQueueSJF.pop();
+                        this->running = true;
+                    }
+                }
+                else {
+                    if (this->running == true && !this->_readyQueueSJF.empty()) {
+                        if (cpu->getProcess()->getBurst() > this->_readyQueueSJF.top()->getBurst()) {
+                            std::chrono::duration<float> duration(delay);
+                            std::this_thread::sleep_for(duration);
+                            this->_readyQueueSJF.push(cpu->getProcess());
+                            cpu->setProcess(this->_readyQueueSJF.top());
+                            this->_readyQueueSJF.pop();
+                        }
+                    }
+                    if (this->running == false) {
+                        std::chrono::duration<float> duration(delay);
+                        std::this_thread::sleep_for(duration);
+                        this->running = true;
+                    }
+                }
+            }
+        }
     }
     else {
         while (this->running) {
-            this->running = false;
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->isReady()) {

@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "ICommand.h"
+#include <random>
 
 
 class Process {
 public:
-    Process(int pid, std::string name, bool filler = false);
+    Process(std::string name, std::uniform_int_distribution<int> commandDistr);
     ~Process() = default;
 
     void execute();
@@ -32,6 +33,7 @@ public:
     bool operator<(std::shared_ptr<Process> other) {
         return this->getBurst() > other->getBurst();
     };
+    static int nextID;
 
 private:
     int _pid;

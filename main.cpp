@@ -1,10 +1,13 @@
-#include <iostream>
-#include "InitScheduler.h"
+#include "ConsoleManager.h"
 
 
 int main() {
-    InitScheduler init = InitScheduler();
-    init.initialize();
-    std::cout << init.getScheduler() << endl;
+    // init
+    ConsoleManager::initialize();
+    ConsoleManager* conman = ConsoleManager::get();
+
+    // start
+    conman->start();
+
     return 0;
 }

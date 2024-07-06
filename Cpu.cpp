@@ -17,7 +17,7 @@ CPU::CPU() {
 
 void CPU::setProcess(std::shared_ptr<Process> process) {
     this->_process = process;
-    this->_ready = false;
+    this->_ready = process == nullptr;
 }
 
 void CPU::run() {

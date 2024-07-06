@@ -20,9 +20,10 @@ public:
     void startRR(int delay, int quantumCycles);
     void stop();
     void destroy();
-    static void initialize(int cpuCount);
+    static void initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns);
     void addProcess(std::shared_ptr<Process> process);
-    void schedulerTest(float batchProcessFreq, int minIns, int maxIns);
+    void schedulerTest();
+    void schedulerTestStop();
     
     void printStatus();
 private:
@@ -33,6 +34,8 @@ private:
     void runSJF(float delay, bool preemptive); // SJF
     void runRR(float delay, int quantumCycles); // RR
 
+    void schedulerRun();
+
     static Scheduler* _ptr;
 
     queue<shared_ptr<Process>> _readyQueue;
@@ -40,6 +43,11 @@ private:
     vector<shared_ptr<Process>> _processList;
     priority_queue<shared_ptr<Process>> _readyQueueSJF;
 
+    float batchProcessFreq;
+    int minIns;
+    int maxIns;
+
+    bool _testRunning = false;
     bool running = false;
     friend class ConsoleManager;
 };
