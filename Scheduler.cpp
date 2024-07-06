@@ -65,7 +65,54 @@ void Scheduler::addProcess(std::shared_ptr<Process> process) {
 }
 
 void Scheduler::printStatus() {
+    for (int i = 0; i < 38; i++) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+    std::cout << "Running processes:" << std::endl;
+    for (int i = 0; i < this->_cpuList.size(); i++) {
+        std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+        if (cpu->isReady()) {
+            std::cout << "Idle\tCore: " << std::to_string(cpu->getId()) << std::endl;
+        }
+        else {
+            std::string process = cpu->getProcessName();
+            std::string commandCounter = std::to_string(cpu->getProcessCommandCounter());
+            std::string totalCommands = std::to_string(cpu->getProcessCommandListSize());
+            std::string cpuID = std::to_string(cpu->getId());
 
+            auto timestamp = cpu->getProcessArrivalTime();
+            struct tm timeInfo;
+            localtime_s(&timeInfo, &timestamp);
+            char buffer[80];
+            strftime(buffer, sizeof(buffer), "(%D %r)", &timeInfo);
+
+            std::cout << process + "\t" + buffer + "\t" + "Core: " + cpuID + "\t" + commandCounter + " / " + totalCommands << std::endl;
+        }
+    }
+    std::cout << std::endl;
+
+    std::cout << "Finished processes:" << std::endl;
+
+    for (int i = 0; i < this->_processList.size(); i++) {
+        if (this->_processList.at(i)->hasFinished()) {
+            std::string process = this->_processList.at(i)->getName();
+            std::string commandCounter = std::to_string(this->_processList.at(i)->getCommandCounter());
+            std::string totalCommands = std::to_string(this->_processList.at(i)->getCommandListSize());
+
+            auto timestamp = this->_processList.at(i)->getFinishTime();
+            struct tm timeInfo;
+            localtime_s(&timeInfo, &timestamp);
+            char buffer[80];
+            strftime(buffer, sizeof(buffer), "(%D %r)", &timeInfo);
+
+            std::cout << process + "\t" + buffer + "\t" + "Finished" + "\t" + commandCounter + " / " + totalCommands << std::endl;
+        }
+    }
+    for (int i = 0; i < 38; i++) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
 }
 
 void Scheduler::schedulerTest(float batchProcessFreq, int minIns, int maxIns) {
