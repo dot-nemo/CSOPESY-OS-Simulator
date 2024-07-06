@@ -65,6 +65,19 @@ void Scheduler::addProcess(std::shared_ptr<Process> process) {
 }
 
 void Scheduler::printStatus() {
+    int cpuReadyCount = 0;
+    for (std::shared_ptr<CPU> cpu : this->_cpuList) {
+        if (!cpu->isReady()) {
+            cpuReadyCount++;
+        }
+    }
+    float cpuUtilization = 100.0 * cpuReadyCount / this->_cpuList.size();
+
+    std::cout << "CPU Utilization: " << cpuUtilization << std::endl
+        << "Cores used: " << this->_cpuList.size() - cpuReadyCount << std::endl
+        << "Cores available: " << cpuReadyCount << std::endl
+        << std::endl;
+
     for (int i = 0; i < 38; i++) {
         std::cout << "-";
     }
