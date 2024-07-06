@@ -13,6 +13,7 @@ public:
     ~AConsole() = default;
 
     bool isActive() { return this->_active; }
+    bool canRemove() { return this->_canRemove; };
 
     virtual void run();
     virtual void stop();
@@ -30,6 +31,7 @@ protected:
     std::string _name;
 
     bool _active = false;
+    bool _canRemove = false;
 };
 
 #endif // !ACONSOLE_H
