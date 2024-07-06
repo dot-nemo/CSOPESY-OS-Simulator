@@ -41,12 +41,14 @@ bool ConsoleManager::newConsole(std::string name, AConsole_ console) {
                 break;
             }
         }
-    }
-    if (found) {
+        if (found)
         this->_consoleMap[name] = console;
-    }
 
     this->switchConsole(name);
+    }
+    else {
+        this->_consoleMap[name] = console;
+    }
 
     return true;
 }
