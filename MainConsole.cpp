@@ -67,11 +67,15 @@ void MainConsole::run() {
 		if (input == "initialize") {
 			this->_initialized = true;
 			this->_conman->newConsole("MARQUEE_CONSOLE", std::make_shared<MarqueeConsole>(144));
-			auto sched = Scheduler::get();
+			// INITIALIZE SCHEDULER HERE // TO REMOVE WHEN TEST IMPLEMENTED
+			Scheduler::initialize(4);
+			Scheduler* sched = Scheduler::get();
 			this->_conman->_scheduler = sched;
 			// Test add // TO REMOVE WHEN TEST IMPLEMENTED
-			sched->addProcess(std::make_shared<Process>(69, "test_process", true));
-			sched->addProcess(std::make_shared<Process>(68, "test_process", true));
+			std::shared_ptr<Process> process = std::make_shared<Process>(69, "test_process", true);
+			sched->addProcess(process);
+			process = std::make_shared<Process>(68, "test_process2", true);
+			sched->addProcess(process);
 			sched->startFCFS(5);
 		}
 		if (input == "exit") {
