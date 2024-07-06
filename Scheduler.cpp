@@ -144,6 +144,7 @@ void Scheduler::schedulerTest() {
 }
 
 void Scheduler::schedulerRun() {
+    std::cout << "Started adding processes." << std::endl;
     while (this->_testRunning) {
         std::uniform_int_distribution<int>  distr(this->minIns, this->maxIns);
         std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), distr);
@@ -155,6 +156,7 @@ void Scheduler::schedulerRun() {
 
 void Scheduler::schedulerTestStop() {
     this->_testRunning = false;
+    std::cout << "Stopped adding processes." << std::endl;
 }
 
 void Scheduler::runFCFS(float delay) { // FCFS
