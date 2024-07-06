@@ -25,6 +25,8 @@ private:
     void printHeader();
 
     std::unordered_map<std::string, std::function<void(argType)>> _commandMap;
+
+    bool _initialized = false;
 };
 
 #endif // !MAINCONSOLE_H

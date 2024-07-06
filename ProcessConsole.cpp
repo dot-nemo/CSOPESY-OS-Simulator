@@ -8,6 +8,7 @@ ProcessConsole::ProcessConsole(std::shared_ptr<Process> process) :
 
 void ProcessConsole::run() {
 	if (this->_process->hasFinished()) {
+		this->_canRemove = true;
 		return;
 	}
 	system("cls");
@@ -42,6 +43,8 @@ void ProcessConsole::run() {
 }
 
 void ProcessConsole::stop() {
+	if (this->_process->hasFinished())
+		this->_canRemove = true;
     this->_active = false;
 }
 
