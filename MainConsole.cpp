@@ -13,25 +13,34 @@
 
 MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE") {
 	// SCREEN
-	this->_commandMap["screen"] = [conman](argType arguments) { 
+	this->_commandMap["screen"] = [conman](argType arguments) {
 		if (arguments.size() > 2) {
 			std::cout << "Too many strings!" << std::endl;
 			return;
 		}
-		else if (arguments.size() == 1) {
-			std::cout << "No process specified." << std::endl;
-			return;
-		}
-		else if (arguments.size() == 0) {
+		else if (arguments.at(0) == "screen") {
 			std::cout << "TODO: help for screen" << std::endl;
 			return;
 		}
 
 		if (arguments.at(0) == "-s") {
-			conman->newConsole(arguments.at(1));
+			if (arguments.size() == 1)
+				std::cout << "No process specified." << std::endl;
+			else
+				conman->newConsole(arguments.at(1));
 		}
 		else if (arguments.at(0) == "-r") {
-			conman->switchConsole(arguments.at(1));
+			if (arguments.size() == 1)
+				std::cout << "No process specified." << std::endl;
+			else
+				conman->switchConsole(arguments.at(1));
+		}
+		else if (arguments.at(0) == "-ls") {
+			conman->_scheduler->printStatus();
+		}
+		else {
+			std::cout << "TODO: help for screen" << std::endl;
+			return;
 		}
 	};
 	this->_commandMap["marquee"] = [conman](argType arguments) {

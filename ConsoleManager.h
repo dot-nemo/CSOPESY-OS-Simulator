@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include "MainConsole.h"
 
 
 typedef std::shared_ptr<AConsole> AConsole_;
@@ -34,6 +35,7 @@ private:
     AConsole_ _mainConsole = nullptr;
 
     Scheduler* _scheduler = nullptr;
+    friend class MainConsole;
 };
 
 #endif // !CONSOLEMANAGER_H
