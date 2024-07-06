@@ -27,6 +27,8 @@ private:
     std::unordered_map<std::string, std::function<void(argType)>> _commandMap;
 
     bool _initialized = false;
+
+    ConsoleManager* _conman = nullptr;
 };
 
 #endif // !MAINCONSOLE_H

@@ -8,11 +8,13 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include "Scheduler.h"
+#include "MarqueeConsole.h"
 
 #define SPACE " "
 
 
-MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE") {
+MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE"), _conman(conman) {
 	// SCREEN
 	this->_commandMap["screen"] = [conman](argType arguments) {
 		if (arguments.size() > 2) {
@@ -62,8 +64,16 @@ void MainConsole::run() {
 	while (!this->_initialized) {
 		std::cout << "root:\\> ";
 		getline(std::cin, input);
-		if (input == "initialize")
+		if (input == "initialize") {
 			this->_initialized = true;
+			this->_conman->newConsole("MARQUEE_CONSOLE", std::make_shared<MarqueeConsole>(144));
+			auto sched = Scheduler::get();
+			this->_conman->_scheduler = sched;
+			// Test add // TO REMOVE WHEN TEST IMPLEMENTED
+			sched->addProcess(std::make_shared<Process>(69, "test_process", true));
+			sched->addProcess(std::make_shared<Process>(68, "test_process", true));
+			sched->startFCFS(5);
+		}
 		if (input == "exit") {
 			this->stop();
 			return;
