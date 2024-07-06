@@ -73,7 +73,7 @@ void Scheduler::printStatus() {
     }
     float cpuUtilization = 100.0 * cpuReadyCount / this->_cpuList.size();
 
-    std::cout << "CPU Utilization: " << cpuUtilization << std::endl
+    std::cout << "CPU Utilization: " << cpuUtilization << "%" << std::endl
         << "Cores used: " << this->_cpuList.size() - cpuReadyCount << std::endl
         << "Cores available: " << cpuReadyCount << std::endl
         << std::endl;
