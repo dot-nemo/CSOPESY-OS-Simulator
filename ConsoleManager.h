@@ -9,8 +9,6 @@
 #include <unordered_map>
 
 
-
-typedef std::shared_ptr<std::string> Process_;
 typedef std::shared_ptr<AConsole> AConsole_;
 
 class ConsoleManager {
@@ -20,7 +18,7 @@ public:
     static void destroy();
 
     void start();
-    bool newConsole(Process_ process, AConsole_ console = nullptr);
+    bool newConsole(std::string name, AConsole_ console = nullptr);
     void switchConsole(std::string processName);
 
 private:

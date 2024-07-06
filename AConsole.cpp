@@ -7,13 +7,12 @@
 #include <windows.h>
 #include <tuple>
 
-// TODO: Change type of shared_ptr to Process once implemented
-AConsole::AConsole(std::shared_ptr<std::string> name) {
-    this->_process = name;
+AConsole::AConsole(std::string name) {
+    this->_name = name;
 }
 
 void AConsole::run() {
-    std::cout << "Starting " + *this->_process << std::endl;
+    std::cout << "Starting " + this->_name << std::endl;
     this->_active = true;
     std::this_thread::sleep_for(std::chrono::milliseconds(25));
     this->stop();
@@ -22,12 +21,12 @@ void AConsole::run() {
 void AConsole::stop() {
     if (this->_active) {
         this->_active = false;
-        std::cout << "Stopping " + *this->_process << std::endl;
+        std::cout << "Stopping " + this->_name << std::endl;
     }
 }
 
 void AConsole::draw() {
-    std::cout << *this->_process << std::endl;
+    std::cout << this->_name << std::endl;
     std::tuple<short, short> temp = this->getWindowSize();
     std::cout << std::get<0>(temp) << " " << std::get<1>(temp) << std::endl;
 }
