@@ -11,6 +11,7 @@
 #include "Scheduler.h"
 #include "MarqueeConsole.h"
 #include "InitScheduler.h"
+#include <random>
 
 #define SPACE " "
 
@@ -78,9 +79,10 @@ void MainConsole::run() {
 			this->_conman->_scheduler = sched;
 
 			// Test add // TO REMOVE WHEN TEST IMPLEMENTED
-			std::shared_ptr<Process> process = std::make_shared<Process>(69, "test_process", true);
+			std::uniform_int_distribution<int>  distr(schedConfig.getMinIns(), schedConfig.getMaxIns());
+			std::shared_ptr<Process> process = std::make_shared<Process>(69, "test_process", distr);
 			sched->addProcess(process);
-			process = std::make_shared<Process>(68, "test_process2", true);
+			process = std::make_shared<Process>(68, "test_process2", distr);
 			sched->addProcess(process);
 
 			std::string schedType = schedConfig.getScheduler();
