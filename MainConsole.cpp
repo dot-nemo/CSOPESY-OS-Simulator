@@ -10,6 +10,7 @@
 #include <fstream>
 #include "Scheduler.h"
 #include "MarqueeConsole.h"
+#include "InitScheduler.h"
 
 #define SPACE " "
 
@@ -67,16 +68,32 @@ void MainConsole::run() {
 		if (input == "initialize") {
 			this->_initialized = true;
 			this->_conman->newConsole("MARQUEE_CONSOLE", std::make_shared<MarqueeConsole>(144));
-			// INITIALIZE SCHEDULER HERE // TO REMOVE WHEN TEST IMPLEMENTED
-			Scheduler::initialize(4);
+
+			InitScheduler schedConfig = InitScheduler();
+			schedConfig.initialize();
+			Scheduler::initialize(schedConfig.getNumCpu());
+
 			Scheduler* sched = Scheduler::get();
+
 			this->_conman->_scheduler = sched;
+
 			// Test add // TO REMOVE WHEN TEST IMPLEMENTED
 			std::shared_ptr<Process> process = std::make_shared<Process>(69, "test_process", true);
 			sched->addProcess(process);
 			process = std::make_shared<Process>(68, "test_process2", true);
 			sched->addProcess(process);
-			sched->startFCFS(5);
+
+			std::string schedType = schedConfig.getScheduler();
+			if (schedType == "fcfs") {
+				sched->startFCFS(schedConfig.getDelaysPerExec());
+			}
+			else if (schedType == "sjf") {
+				sched->startSJF(schedConfig.getDelaysPerExec(), schedConfig.isPreemptive());
+			}
+			else if (schedType == "rr") {
+				sched->startRR(schedConfig.getDelaysPerExec(), schedConfig.getQuantumCycle());
+			}
+
 		}
 		if (input == "exit") {
 			this->stop();
