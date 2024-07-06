@@ -18,15 +18,19 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE") {
 			std::cout << "Too many strings!" << std::endl;
 			return;
 		}
-		if (arguments.size() == 1) {
+		else if (arguments.size() == 1) {
 			std::cout << "No process specified." << std::endl;
 			return;
 		}
-		if (arguments.size() == 0) {
+		else if (arguments.size() == 0) {
 			std::cout << "TODO: help for screen" << std::endl;
 			return;
 		}
+
 		if (arguments.at(0) == "-s") {
+			conman->newConsole(arguments.at(1));
+		}
+		else if (arguments.at(0) == "-r") {
 			conman->switchConsole(arguments.at(1));
 		}
 	};

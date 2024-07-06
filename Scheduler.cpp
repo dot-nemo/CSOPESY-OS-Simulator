@@ -58,8 +58,9 @@ void Scheduler::destroy() {
 	delete _ptr;
 }
 
-void Scheduler::addProcess(Process process) {
-	this->_readyQueue.push(std::make_shared<Process>(process));
+void Scheduler::addProcess(std::shared_ptr<Process> process) {
+	this->_readyQueue.push(process);
+    this->_processList.push_back(process);
 }
 
 void Scheduler::printStatus() {

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "MainConsole.h"
+#include "ProcessConsole.h"
 
 
 ConsoleManager* ConsoleManager::ptr = nullptr;
@@ -30,10 +31,22 @@ bool ConsoleManager::newConsole(std::string name, AConsole_ console) {
         return false;
     }
 
-    if (console == nullptr)
-        this->_consoleMap[name] = std::make_shared<AConsole>(name);
-    else
+    bool found = false;
+    if (console == nullptr) {
+        std::vector<std::shared_ptr<Process>> copyList = this->_scheduler->_processList;
+        for (int i = 0; i < copyList.size(); i++) {
+            if (name == copyList.at(i)->getName() && !copyList.at(i)->hasFinished()) {
+                console = std::make_shared<ProcessConsole>(copyList.at(i));
+                found = true;
+                break;
+            }
+        }
+    }
+    if (found) {
         this->_consoleMap[name] = console;
+    }
+
+    this->switchConsole(name);
 
     return true;
 }

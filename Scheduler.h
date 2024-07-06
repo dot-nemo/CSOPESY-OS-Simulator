@@ -20,8 +20,8 @@ public:
     void startRR(int delay, int quantumCycles);
     void stop();
     void destroy();
-    void initialize(int cpuCount);
-    void addProcess(Process process);
+    static void initialize(int cpuCount);
+    void addProcess(std::shared_ptr<Process> process);
     void schedulerTest(float batchProcessFreq, int minIns, int maxIns);
     
     void printStatus();
@@ -40,7 +40,7 @@ private:
     vector<shared_ptr<Process>> _processList;
 
     bool running = false;
-
+    friend class ConsoleManager;
 };
 
 #endif // SCHEDULER_H
