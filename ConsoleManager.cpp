@@ -42,9 +42,9 @@ bool ConsoleManager::newConsole(std::string name, AConsole_ console) {
             }
         }
         if (found)
-        this->_consoleMap[name] = console;
+            this->_consoleMap[name] = console;
 
-    this->switchConsole(name);
+        this->switchConsole(name);
     }
     else {
         this->_consoleMap[name] = console;
@@ -55,6 +55,10 @@ bool ConsoleManager::newConsole(std::string name, AConsole_ console) {
 
 void ConsoleManager::switchConsole(std::string processName) {
     if (this->_consoleMap.find(processName) == this->_consoleMap.end()) {
+        std::cout << "Process " + processName + " not found." << std::endl;
+        return;
+    } else if (this->_consoleMap[processName]->canRemove()) {
+        this->_consoleMap.erase(processName);
         std::cout << "Process " + processName + " not found." << std::endl;
         return;
     }
