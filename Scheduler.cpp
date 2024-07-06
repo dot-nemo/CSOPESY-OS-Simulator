@@ -61,7 +61,7 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
-    if (InitScheduler::_scheduler == "SJF") {
+    if (InitScheduler::_scheduler == "sjf") {
         this->_readyQueueSJF.push(process);
     }
     else {
