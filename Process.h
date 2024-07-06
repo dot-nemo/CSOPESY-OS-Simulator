@@ -18,6 +18,7 @@ public:
     void execute();
     bool hasFinished();
 
+    int getID() const { return _pid; };
     std::string getName() const { return _name; };
     int getCommandCounter() const { return _commandCounter; };
     int getCommandListSize() const { return _commandList.size(); };

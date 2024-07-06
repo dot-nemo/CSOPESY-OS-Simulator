@@ -11,7 +11,7 @@
 #define SPACE " "
 
 
-MainConsole::MainConsole(ConsoleManager* conman) : AConsole(std::make_shared<std::string>("MAIN_CONSOLE")) {
+MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE") {
 	// SCREEN
 	this->_commandMap["screen"] = [conman](argType arguments) { 
 		if (arguments.size() > 2) {
