@@ -21,7 +21,8 @@ void CPU::setProcess(std::shared_ptr<Process> process) {
 }
 
 void CPU::run() {
-    while (true) {
+    this->_stopFlag = false;
+    while (!this->_stopFlag) {
         if (this->_process != nullptr) {
             this->_process->setCPUCoreID(this->_id);
             this->_process->execute();
@@ -31,4 +32,5 @@ void CPU::run() {
             }
         }
     }
+    this->_ready = true;
 }

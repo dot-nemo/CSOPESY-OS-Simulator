@@ -19,6 +19,7 @@ public:
     int getProcessCommandListSize() const { return this->_process->getCommandListSize(); };
     time_t getProcessArrivalTime() const { return this->_process->getArrivalTime(); };
 
+    void stop() { this->_stopFlag = true; };
     bool isReady() const { return _ready; };
 
 private:
@@ -27,6 +28,7 @@ private:
     static int nextID;
     int _id;
     bool _ready = true;
+    bool _stopFlag = false;
 
     std::shared_ptr<Process> _process = nullptr;
 };
