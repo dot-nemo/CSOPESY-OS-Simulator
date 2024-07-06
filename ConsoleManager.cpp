@@ -24,17 +24,16 @@ void ConsoleManager::start() {
     this->_current->run();
 }
 
-// TODO: Change process from string to actual process
-bool ConsoleManager::newConsole(Process_ process, AConsole_ console) {
-    if (this->_consoleMap.find(*process) != this->_consoleMap.end()) {
-        std::cout << "Process '" + *process + "' is already running!" << std::endl;
+bool ConsoleManager::newConsole(std::string name, AConsole_ console) {
+    if (this->_consoleMap.find(name) != this->_consoleMap.end()) {
+        std::cout << "Process '" + name + "' is already running!" << std::endl;
         return false;
     }
 
     if (console == nullptr)
-        this->_consoleMap[*process] = std::make_shared<AConsole>(process);
+        this->_consoleMap[name] = std::make_shared<AConsole>(name);
     else
-        this->_consoleMap[*process] = console;
+        this->_consoleMap[name] = console;
 
     return true;
 }

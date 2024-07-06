@@ -2,7 +2,7 @@
 #include <iostream>
 
 ProcessConsole::ProcessConsole(std::shared_ptr<Process> process) : 
-    AConsole(std::make_shared<std::string>(process->getName())), 
+    AConsole(process->getName()), 
     _process(process) {
 }
 

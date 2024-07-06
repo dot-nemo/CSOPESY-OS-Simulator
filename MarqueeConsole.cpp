@@ -10,7 +10,7 @@
 #include <tuple>
 
 
-MarqueeConsole::MarqueeConsole(int refreshRate) : AConsole(std::make_shared<std::string>("MarqueeConsole")) {
+MarqueeConsole::MarqueeConsole(int refreshRate) : AConsole("MarqueeConsole") {
 	this->refreshRate = refreshRate;
 	this->interval = 1000.0 / refreshRate;
 }
