@@ -41,7 +41,7 @@ bool ConsoleManager::newConsole(Process_ process, AConsole_ console) {
 
 void ConsoleManager::switchConsole(std::string processName) {
     if (this->_consoleMap.find(processName) == this->_consoleMap.end()) {
-        std::cout << "No process found with the name " + processName << std::endl;
+        std::cout << "Process " + processName + " not found." << std::endl;
         return;
     }
 
@@ -49,7 +49,7 @@ void ConsoleManager::switchConsole(std::string processName) {
 
     this->_current = this->_consoleMap[processName];
     this->_current->run();
-
+        
     // Wait for console to set active to false
     while (this->_current->isActive()) {}
 
