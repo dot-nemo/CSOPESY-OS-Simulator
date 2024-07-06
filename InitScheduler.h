@@ -11,15 +11,51 @@ public:
 	InitScheduler();
 	~InitScheduler();
 	void initialize();
+    
+    int getNumCpu() const {
+        return _numCpu;
+    }
+
+    std::string getScheduler() const {
+        return _scheduler;
+    }
+
+    int getQuantumCycle() const {
+        return _quantumCycle;
+    }
+
+    bool isPreemptive() const {
+        return _preemptive;
+    }
+
+    float getBatchProcessFreq() const {
+        return _batchProcessFreq;
+    }
+
+    int getMinIns() const {
+        return _minIns;
+    }
+
+    int getMaxIns() const {
+        return _maxIns;
+    }
+
+    float getDelaysPerExec() const {
+        return _delaysPerExec;
+    }
+
+    bool isRunning() const {
+        return running;
+    }
 private:
     int _numCpu;
     string _scheduler;
     int _quantumCycle;
     bool _preemptive;
-    int _batchProcessFreq;
+    float _batchProcessFreq;
     int _minIns;
     int _maxIns;
-    int _delaysPerExec;
+    float _delaysPerExec;
     bool running = false;
 };
 
