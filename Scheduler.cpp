@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <limits.h>
 
 #include "CPU.h"
 #include "Process.h"
@@ -93,29 +94,22 @@ void Scheduler::runFCFS(float delay) { // FCFS
     }
 }
 
-void Scheduler::runSJF(float delay, bool preemptive) {
+void Scheduler::runSJF(float delay, bool preemptive) { // SJF
     if (preemptive) {
         
     }
     else {
+        std::priority_queue<shared_ptr<Process>> readyQueue;
+        while (!this->_readyQueue.empty()) {
+            readyQueue.push(this->_readyQueue.front());
+            this->_readyQueue.pop();
+        }
         while (this->running) {
             this->running = false;
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
-                if (cpu->isReady()) {
-                    if (this->_readyQueue.size() > 0) {
-                        cpu->setProcess(this->_readyQueue.front());
-                        this->_readyQueue.pop();
-                        this->running = true;
-                    }
-                }
-                else {
-                    if (this->running == false) {
-                        std::chrono::duration<float> duration(delay);
-                        std::this_thread::sleep_for(duration);
-                        this->running = true;
-                    }
-                }
+                
+                
             }
         }
     }
