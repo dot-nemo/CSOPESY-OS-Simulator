@@ -13,6 +13,8 @@ InitScheduler::~InitScheduler() {
 
 }
 
+std::string InitScheduler::_scheduler = "";
+
 void InitScheduler::initialize() {
     ifstream inputFile("config.txt");
     if (!inputFile.is_open()) {
