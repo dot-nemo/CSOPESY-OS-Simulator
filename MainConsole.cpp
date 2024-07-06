@@ -59,6 +59,12 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE"), _co
 		std::cout.rdbuf(coutbuf); //reset to standard output again
 		std::cout << "root:\\> Report generated at root:/csopesy-log.txt\n";
 	};
+	this->_commandMap["scheduler-test"] = [conman](argType arguments) {
+		conman->_scheduler->schedulerTest();
+	};
+	this->_commandMap["scheduler-stop"] = [conman](argType arguments) {
+		conman->_scheduler->schedulerTestStop();
+	};
 }
 
 void MainConsole::run() {
@@ -72,18 +78,13 @@ void MainConsole::run() {
 
 			InitScheduler schedConfig = InitScheduler();
 			schedConfig.initialize();
-			Scheduler::initialize(schedConfig.getNumCpu());
+			Scheduler::initialize(schedConfig.getNumCpu(), schedConfig.getBatchProcessFreq(), schedConfig.getMinIns(), schedConfig.getMaxIns());
 
 			Scheduler* sched = Scheduler::get();
 
 			this->_conman->_scheduler = sched;
 
 			// Test add // TO REMOVE WHEN TEST IMPLEMENTED
-			std::uniform_int_distribution<int>  distr(schedConfig.getMinIns(), schedConfig.getMaxIns());
-			std::shared_ptr<Process> process = std::make_shared<Process>(69, "test_process", distr);
-			sched->addProcess(process);
-			process = std::make_shared<Process>(68, "test_process2", distr);
-			sched->addProcess(process);
 
 			std::string schedType = schedConfig.getScheduler();
 			if (schedType == "fcfs") {
