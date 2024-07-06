@@ -1,28 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Source Files\Console">
-      <UniqueIdentifier>{d6318518-f9b9-43af-9588-ad2c177b9c8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Console\Manager">
-      <UniqueIdentifier>{8a010acd-2e7c-4610-b899-08c9c9311fe8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Console\MainConsole">
-      <UniqueIdentifier>{8cda6f9e-5871-4517-8223-109fc74f1a68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Console\MarqueeConsole">
-      <UniqueIdentifier>{0dfbd861-01e0-4ea5-a4a1-dc9be5b6cfcc}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AConsole.cpp">
       <Filter>Source Files\Console</Filter>
@@ -35,6 +13,24 @@
     </ClCompile>
     <ClCompile Include="MarqueeConsole.cpp">
       <Filter>Source Files\Console\MarqueeConsole</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessConsole.cpp">
+      <Filter>Source Files\Console\ProcessConsole</Filter>
+    </ClCompile>
+    <ClCompile Include="Scheduler.cpp">
+      <Filter>Source Files\Process\Scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="CPU.cpp">
+      <Filter>Source Files\Process\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintCommand.cpp">
+      <Filter>Source Files\Process\Command\PrintCommand</Filter>
+    </ClCompile>
+    <ClCompile Include="InitScheduler.cpp">
+      <Filter>Source Files\Process\Scheduler\Initialize</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,5 +46,67 @@
     <ClInclude Include="MarqueeConsole.h">
       <Filter>Source Files\Console\MarqueeConsole</Filter>
     </ClInclude>
+    <ClInclude Include="ProcessConsole.h">
+      <Filter>Source Files\Console\ProcessConsole</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler.h">
+      <Filter>Source Files\Process\Scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="Process.h">
+      <Filter>Source Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="CPU.h">
+      <Filter>Source Files\Process\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="ICommand.h">
+      <Filter>Source Files\Process\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintCommand.h">
+      <Filter>Source Files\Process\Command\PrintCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="InitScheduler.h">
+      <Filter>Source Files\Process\Scheduler\Initialize</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c1e1faef-4a53-4928-96f0-159d85c2ae14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console">
+      <UniqueIdentifier>{6976b137-c48f-4c7a-a0d1-3d401baabe79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console\Manager">
+      <UniqueIdentifier>{740de2af-15e2-46ec-b3ec-be66e6ef3554}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console\MainConsole">
+      <UniqueIdentifier>{6347ffa7-4ea9-4f53-a2fe-6e23f1e1e267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console\MarqueeConsole">
+      <UniqueIdentifier>{852ed0c3-8bfc-4019-b686-1134b49d9e9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console\ProcessConsole">
+      <UniqueIdentifier>{603e9f79-49c6-4215-a510-4cdb95151f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process">
+      <UniqueIdentifier>{e3a3e3b9-7f43-4ab2-bb8f-5485957a712f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\Scheduler">
+      <UniqueIdentifier>{21389073-919a-4dca-88d5-5527d130bcea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\CPU">
+      <UniqueIdentifier>{ed1b288c-0158-43d7-ac51-c3fe6251daed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\Command">
+      <UniqueIdentifier>{36ff8601-0236-41b8-b4a1-680991d978e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\Command\PrintCommand">
+      <UniqueIdentifier>{df95cf72-cfb8-4be5-b440-f5384c76dc5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\Scheduler\Initialize">
+      <UniqueIdentifier>{bc8ac3b8-bbb8-49e2-a195-b978ad1fb796}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

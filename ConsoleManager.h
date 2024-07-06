@@ -3,14 +3,14 @@
 #define CONSOLEMANAGER_H
 
 #include "AConsole.h"
+#include "Scheduler.h"
 #include <chrono>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include "MainConsole.h"
 
 
-
-typedef std::shared_ptr<std::string> Process_;
 typedef std::shared_ptr<AConsole> AConsole_;
 
 class ConsoleManager {
@@ -20,8 +20,10 @@ public:
     static void destroy();
 
     void start();
-    bool newConsole(Process_ process, AConsole_ console = nullptr);
+    bool newConsole(std::string name, AConsole_ console = nullptr);
     void switchConsole(std::string processName);
+
+    void setScheduler(Scheduler* scheduler) { _scheduler = scheduler; };
 
 private:
     ConsoleManager();
@@ -31,6 +33,9 @@ private:
     std::unordered_map<std::string, AConsole_> _consoleMap;
     AConsole_ _current = nullptr;
     AConsole_ _mainConsole = nullptr;
+
+    Scheduler* _scheduler = nullptr;
+    friend class MainConsole;
 };
 
 #endif // !CONSOLEMANAGER_H

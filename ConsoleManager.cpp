@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "MainConsole.h"
+#include "ProcessConsole.h"
 
 
 ConsoleManager* ConsoleManager::ptr = nullptr;
@@ -24,24 +25,41 @@ void ConsoleManager::start() {
     this->_current->run();
 }
 
-// TODO: Change process from string to actual process
-bool ConsoleManager::newConsole(Process_ process, AConsole_ console) {
-    if (this->_consoleMap.find(*process) != this->_consoleMap.end()) {
-        std::cout << "Process '" + *process + "' is already running!" << std::endl;
+bool ConsoleManager::newConsole(std::string name, AConsole_ console) {
+    if (this->_consoleMap.find(name) != this->_consoleMap.end()) {
+        std::cout << "Process '" + name + "' is already running!" << std::endl;
         return false;
     }
 
-    if (console == nullptr)
-        this->_consoleMap[*process] = std::make_shared<AConsole>(process);
-    else
-        this->_consoleMap[*process] = console;
+    bool found = false;
+    if (console == nullptr) {
+        std::vector<std::shared_ptr<Process>> copyList = this->_scheduler->_processList;
+        for (int i = 0; i < copyList.size(); i++) {
+            if (name == copyList.at(i)->getName() && !copyList.at(i)->hasFinished()) {
+                console = std::make_shared<ProcessConsole>(copyList.at(i));
+                found = true;
+                break;
+            }
+        }
+        if (found)
+            this->_consoleMap[name] = console;
+
+        this->switchConsole(name);
+    }
+    else {
+        this->_consoleMap[name] = console;
+    }
 
     return true;
 }
 
 void ConsoleManager::switchConsole(std::string processName) {
     if (this->_consoleMap.find(processName) == this->_consoleMap.end()) {
-        std::cout << "No process found with the name " + processName << std::endl;
+        std::cout << "Process " + processName + " not found." << std::endl;
+        return;
+    } else if (this->_consoleMap[processName]->canRemove()) {
+        this->_consoleMap.erase(processName);
+        std::cout << "Process " + processName + " not found." << std::endl;
         return;
     }
 
@@ -49,9 +67,12 @@ void ConsoleManager::switchConsole(std::string processName) {
 
     this->_current = this->_consoleMap[processName];
     this->_current->run();
-
+        
     // Wait for console to set active to false
     while (this->_current->isActive()) {}
+
+    if (this->_current->canRemove())
+        this->_consoleMap.erase(processName);
 
     this->_current = this->_mainConsole;
     this->_current->run();

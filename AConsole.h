@@ -9,10 +9,11 @@
 
 class AConsole {
 public:
-    AConsole(std::shared_ptr<std::string> process);
+    AConsole(std::string name);
     ~AConsole() = default;
 
     bool isActive() { return this->_active; }
+    bool canRemove() { return this->_canRemove; };
 
     virtual void run();
     virtual void stop();
@@ -27,9 +28,10 @@ protected:
     void DrawBox(short topRow, short leftCol, short width, short height, bool two = false);
     std::tuple<short, short> getWindowSize();
 
-    std::shared_ptr<std::string> _process;
+    std::string _name;
 
     bool _active = false;
+    bool _canRemove = false;
 };
 
 #endif // !ACONSOLE_H

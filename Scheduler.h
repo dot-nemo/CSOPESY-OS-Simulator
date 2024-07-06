@@ -15,33 +15,33 @@ class Scheduler {
 public:
     static Scheduler* get();
 
-    void initialize();
-    void start();
+    void startFCFS(int delay);
+    void startSJF(int delay, bool preemptive);
+    void startRR(int delay, int quantumCycles);
     void stop();
     void destroy();
+    static void initialize(int cpuCount);
+    void addProcess(std::shared_ptr<Process> process);
+    void schedulerTest(float batchProcessFreq, int minIns, int maxIns);
+    
     void printStatus();
 private:
     Scheduler();
     ~Scheduler() = default;
 
-    void run();
+    void runFCFS(float delay); // FCFS
+    void runSJF(float delay, bool preemptive); // SJF
+    void runRR(float delay, int quantumCycles); // RR
 
     static Scheduler* _ptr;
-
-    int _numCpu;
-    string _scheduler;
-    int _quantumCycle;
-    bool _preemptive;
-    int _batchProcessFreq;
-    int _minIns;
-    int _maxIns;
-    int _delaysPerExec;
-    bool running = false;
 
     queue<shared_ptr<Process>> _readyQueue;
     vector<shared_ptr<CPU>> _cpuList;
     vector<shared_ptr<Process>> _processList;
+    priority_queue<shared_ptr<Process>> _readyQueueSJF;
 
+    bool running = false;
+    friend class ConsoleManager;
 };
 
 #endif // SCHEDULER_H

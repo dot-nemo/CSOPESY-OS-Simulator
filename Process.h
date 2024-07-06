@@ -18,14 +18,20 @@ public:
     void execute();
     bool hasFinished();
 
+    int getID() const { return _pid; };
     std::string getName() const { return _name; };
     int getCommandCounter() const { return _commandCounter; };
     int getCommandListSize() const { return _commandList.size(); };
+    int getBurst() { return this->getCommandListSize() - this->getCommandCounter(); };
     time_t getArrivalTime() const { return _arrivalTime; };
     time_t getFinishTime() { return _finishTime; };
 
     void setCPUCoreID(int cpuCoreID);
     void setFinishTime() { this->_finishTime = time(nullptr); };
+
+    bool operator<(std::shared_ptr<Process> other) {
+        return this->getBurst() > other->getBurst();
+    };
 
 private:
     int _pid;
