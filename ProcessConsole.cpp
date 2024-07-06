@@ -19,6 +19,7 @@ void ProcessConsole::run() {
 		}
 		if (input == "process-smi") {
 			this->draw();
+			continue;
 		}
 		if (input == "") {
 			continue;
