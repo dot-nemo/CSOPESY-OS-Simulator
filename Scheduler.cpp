@@ -1,4 +1,5 @@
 #include "Scheduler.h"
+#include "InitScheduler.h"
 
 #include <ctime>
 #include <chrono>
@@ -60,7 +61,12 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
-	this->_readyQueue.push(process);
+    if (InitScheduler::_scheduler == "SJF") {
+        this->_readyQueueSJF.push(process);
+    }
+    else {
+        this->_readyQueue.push(process);
+    }
     this->_processList.push_back(process);
 }
 
@@ -157,20 +163,27 @@ void Scheduler::runFCFS(float delay) { // FCFS
 
 void Scheduler::runSJF(float delay, bool preemptive) { // SJF
     if (preemptive) {
-        
+        //todo
     }
     else {
-        std::priority_queue<shared_ptr<Process>> readyQueue;
-        while (!this->_readyQueue.empty()) {
-            readyQueue.push(this->_readyQueue.front());
-            this->_readyQueue.pop();
-        }
         while (this->running) {
             this->running = false;
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
-                
-                
+                if (cpu->isReady()) {
+                    if (this->_readyQueueSJF.size() > 0) {
+                        cpu->setProcess(this->_readyQueueSJF.top());
+                        this->_readyQueueSJF.pop();
+                        this->running = true;
+                    }
+                }
+                else {
+                    if (this->running == false) {
+                        std::chrono::duration<float> duration(delay);
+                        std::this_thread::sleep_for(duration);
+                        this->running = true;
+                    }
+                }
             }
         }
     }
@@ -179,15 +192,25 @@ void Scheduler::runSJF(float delay, bool preemptive) { // SJF
 void Scheduler::runRR(float delay, int quantumCycles) { // RR
     auto start = std::chrono::steady_clock::now();
     while (this->running) {
-        this->running = false;
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
 
+        // Check if quantum cycle limit exceeded
         if (elapsed > quantumCycles) {
-            this->running = false;
-            break;
+            for (int i = 0; i < this->_cpuList.size(); i++) {
+                std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+                if (cpu->getProcess() != nullptr) {
+                    // Push current process back to ready queue
+                    this->_readyQueue.push(cpu->getProcess());
+                    cpu->setProcess(nullptr);
+                    cpu->setReady();
+                    this->running = true; // Set running to true to continue scheduling
+                }
+            }
+            start = std::chrono::steady_clock::now(); // Reset start time for new cycle
         }
 
+        // Assign processes to CPUs
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
             if (cpu->isReady() && !this->_readyQueue.empty()) {
@@ -198,10 +221,11 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
             }
         }
 
+        // If no tasks were scheduled, sleep for delay
         if (!this->running) {
             std::chrono::duration<float> duration(delay);
             std::this_thread::sleep_for(duration);
-            this->running = true;
+            this->running = true; // Set running to true to continue scheduling
         }
     }
 }
