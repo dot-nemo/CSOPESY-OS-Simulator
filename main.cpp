@@ -1,8 +1,10 @@
 #include <iostream>
+#include "InitScheduler.h"
 
 
 int main() {
-    std::cout << "Hello world!" << std::endl;
-
+    InitScheduler init = InitScheduler();
+    init.initialize();
+    std::cout << init.getScheduler() << endl;
     return 0;
 }
