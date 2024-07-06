@@ -20,20 +20,24 @@ public:
     void destroy();
     void initialize(int cpuCount);
     void addProcess(Process process);
+    void schedulerTest(float batchProcessFreq);
     
-
     void printStatus();
 private:
     Scheduler();
     ~Scheduler() = default;
 
-    virtual void run();
+    void run(float delay); // FCFS
+    void run(float delay); // SJF
+    void run(float delay); // RR
 
     static Scheduler* _ptr;
 
     queue<shared_ptr<Process>> _readyQueue;
     vector<shared_ptr<CPU>> _cpuList;
     vector<shared_ptr<Process>> _processList;
+
+    bool running = false;
 
 };
 
