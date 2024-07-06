@@ -58,9 +58,19 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE") {
 }
 
 void MainConsole::run() {
+	std::string input;
+	while (!this->_initialized) {
+		std::cout << "root:\\> ";
+		getline(std::cin, input);
+		if (input == "initialize")
+			this->_initialized = true;
+		if (input == "exit") {
+			this->stop();
+			return;
+		}
+	}
 	system("cls");
     this->_active = true;
-	std::string input;
 	this->printHeader();
     while (this->_active) {
 		std::cout << "root:\\> ";
