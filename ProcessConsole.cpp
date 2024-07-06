@@ -12,12 +12,16 @@ void ProcessConsole::run() {
     while (this->_active) {
 		std::cout << "root:\\> ";
 		std::getline(std::cin, input);
+		this->_history += "root:\\> " + input + "\n";
 		if (input == "exit") {
 			this->stop();
 			return;
 		}
 		if (input == "process-smi") {
 			this->draw();
+		}
+		if (input == "") {
+			continue;
 		}
 		else {
 			std::cout << input << " not recognized." << std::endl;
@@ -30,10 +34,12 @@ void ProcessConsole::stop() {
 }
 
 void ProcessConsole::draw() {
-	std::cout << "Process: " << this->_process->getName() << std::endl
-		<< "ID: " << this->_process->getID() << std::endl
-		<< std::endl
-		<< "Current instruction line: " << this->_process->getCommandCounter() << std::endl
-		<< "Lines of code: " << this->_process->getCommandListSize() << std::endl
-		<< std::endl;
+	std::string info = "Process: " + this->_process->getName() + "\n"
+		+ "ID: " + std::to_string(this->_process->getID()) + "\n"
+		+ "\n"
+		+ "Current instruction line: " + std::to_string(this->_process->getCommandCounter()) + "\n"
+		+ "Lines of code: " + std::to_string(this->_process->getCommandListSize()) + "\n"
+		+ "\n";
+	std::cout << info;
+	this->_history += info;
 }
