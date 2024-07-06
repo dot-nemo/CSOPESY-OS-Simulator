@@ -96,7 +96,7 @@ void Scheduler::runFCFS(float delay) { // FCFS
 
 void Scheduler::runSJF(float delay, bool preemptive) { // SJF
     if (preemptive) {
-        
+        //todo
     }
     else {
         std::priority_queue<shared_ptr<Process>> readyQueue;
@@ -108,8 +108,20 @@ void Scheduler::runSJF(float delay, bool preemptive) { // SJF
             this->running = false;
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
-                
-                
+                if (cpu->isReady()) {
+                    if (readyQueue.size() > 0) {
+                        cpu->setProcess(readyQueue.top());
+                        readyQueue.pop();
+                        this->running = true;
+                    }
+                }
+                else {
+                    if (this->running == false) {
+                        std::chrono::duration<float> duration(delay);
+                        std::this_thread::sleep_for(duration);
+                        this->running = true;
+                    }
+                }
             }
         }
     }
