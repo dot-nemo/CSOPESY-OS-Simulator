@@ -42,6 +42,8 @@ void ProcessConsole::run() {
 }
 
 void ProcessConsole::stop() {
+	if (this->_process->hasFinished())
+		this->_canRemove = true;
     this->_active = false;
 }
 
