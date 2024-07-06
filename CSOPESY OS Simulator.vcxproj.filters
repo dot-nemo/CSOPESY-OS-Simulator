@@ -30,7 +30,7 @@
       <Filter>Source Files\Process\Command\PrintCommand</Filter>
     </ClCompile>
     <ClCompile Include="InitScheduler.cpp">
-      <Filter>Source Files\Process\Scheduler</Filter>
+      <Filter>Source Files\Process\Scheduler\Initialize</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,7 +65,7 @@
       <Filter>Source Files\Process\Command\PrintCommand</Filter>
     </ClInclude>
     <ClInclude Include="InitScheduler.h">
-      <Filter>Source Files\Process\Scheduler</Filter>
+      <Filter>Source Files\Process\Scheduler\Initialize</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +104,9 @@
     </Filter>
     <Filter Include="Source Files\Process\Command\PrintCommand">
       <UniqueIdentifier>{df95cf72-cfb8-4be5-b440-f5384c76dc5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\Scheduler\Initialize">
+      <UniqueIdentifier>{bc8ac3b8-bbb8-49e2-a195-b978ad1fb796}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
