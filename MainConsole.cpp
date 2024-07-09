@@ -11,6 +11,7 @@
 #include "Scheduler.h"
 #include "MarqueeConsole.h"
 #include "InitScheduler.h"
+#include "PrintCommand.h"
 #include <random>
 
 #define SPACE " "
@@ -84,7 +85,7 @@ void MainConsole::run() {
 
 			this->_conman->_scheduler = sched;
 
-			// Test add // TO REMOVE WHEN TEST IMPLEMENTED
+			PrintCommand::setMsDelay(schedConfig.getDelaysPerExec() * 1000);
 
 			std::string schedType = schedConfig.getScheduler();
 			if (schedType == "fcfs") {
