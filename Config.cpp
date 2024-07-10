@@ -40,7 +40,11 @@ void Config::initialize() {
     float batch_process_freq = stof(config["batch-process-freq"]);
     int min_ins = stoi(config["min-ins"]);
     int max_ins = stoi(config["max-ins"]);
+    int max_mem = stoi(config["max-overall-mem"]);
+    int min_mem_proc = stoi(config["min-mem-per-proc"]);
+    int max_mem_proc = stoi(config["max-mem-per-proc"]);
     float delay_per_exec = stof(config["delay-per-exec"]);
+
 
     this->_numCpu = num_cpu;
     this->_scheduler = scheduler;
@@ -49,5 +53,8 @@ void Config::initialize() {
     this->_batchProcessFreq = batch_process_freq;
     this->_minIns = min_ins;
     this->_maxIns = max_ins;
+    this->_maxMem = max_mem;
+    this->_minMemProc = min_mem_proc;
+    this->_maxMemProc = max_mem_proc;
     this->_delaysPerExec = delay_per_exec;
 }
