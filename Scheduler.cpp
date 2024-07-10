@@ -141,13 +141,13 @@ void Scheduler::printStatus() {
 }
 
 void Scheduler::schedulerTest() {
+    std::cout << "Started adding processes." << std::endl;
     this->_testRunning = true;
     std::thread t(&Scheduler::schedulerRun, this);
     t.detach();
 }
 
 void Scheduler::schedulerRun() {
-    std::cout << "Started adding processes." << std::endl;
     while (this->_testRunning) {
         std::uniform_int_distribution<int>  commandDistr(this->minIns, this->maxIns);
         std::uniform_int_distribution<int>  memDistr(this->_minMemProc, this->_maxMemProc);
