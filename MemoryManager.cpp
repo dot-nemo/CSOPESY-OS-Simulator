@@ -49,9 +49,9 @@ void MemoryManager::deallocate(std::string process) {
 		if (currentBlock->process == process) {
 			currentBlock->isFree = true;
 			currentBlock->process = "";
+			if (currentBlock->next->process != process) break;
 		}
 		currentBlock = currentBlock->next;
-		if (currentBlock->isFree) break;
 	}
 }
 
