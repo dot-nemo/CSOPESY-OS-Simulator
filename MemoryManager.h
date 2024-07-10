@@ -14,16 +14,18 @@ struct MemoryBlock {
 
 class MemoryManager {
 public:
-    MemoryManager(int maxMemory);
+    MemoryManager();
     ~MemoryManager() = default;
 
     bool allocate(std::string process, int requiredMem);
     void deallocate(std::string process);
+
+    static void setMaxMemory(int maxMemory);
     
     void printMem();
 
 private:
-    int _maxMemory;
+    static int maxMemory;
     MemoryBlock* _head;
 };
 

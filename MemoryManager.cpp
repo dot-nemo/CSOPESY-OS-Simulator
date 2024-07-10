@@ -5,10 +5,12 @@
 #include <fstream>
 #include <ctime>
 
-MemoryManager::MemoryManager(int maxMemory) : _maxMemory(maxMemory) {
+int MemoryManager::maxMemory = 0;
+
+MemoryManager::MemoryManager() {
 	this->_head = new MemoryBlock();
 	MemoryBlock* currentBlock = this->_head;
-	for (int i = 1; i < maxMemory; i++) {
+	for (int i = 1; i < MemoryManager::maxMemory; i++) {
 		currentBlock->next = new MemoryBlock();
 		currentBlock = currentBlock->next;
 	}
@@ -17,7 +19,7 @@ MemoryManager::MemoryManager(int maxMemory) : _maxMemory(maxMemory) {
 bool MemoryManager::allocate(std::string process, int requiredMem) {
 	MemoryBlock* currentBlock = this->_head;
 	int ctr = 0;
-	for (int i = 0; i < this->_maxMemory; i++) {
+	for (int i = 0; i < MemoryManager::maxMemory; i++) {
 		if (currentBlock != nullptr && currentBlock->isFree) {
 			ctr++;
 		}
@@ -43,7 +45,7 @@ bool MemoryManager::allocate(std::string process, int requiredMem) {
 
 void MemoryManager::deallocate(std::string process) {
 	MemoryBlock* currentBlock = this->_head;
-	for (int i = 0; i < this->_maxMemory; i++) {
+	for (int i = 0; i < MemoryManager::maxMemory; i++) {
 		if (currentBlock->process == process) {
 			currentBlock->isFree = true;
 			currentBlock->process = "";
@@ -51,6 +53,10 @@ void MemoryManager::deallocate(std::string process) {
 		currentBlock = currentBlock->next;
 		if (currentBlock->isFree) break;
 	}
+}
+
+void MemoryManager::setMaxMemory(int maxMemory) {
+	MemoryManager::maxMemory = maxMemory;
 }
 
 void MemoryManager::printMem() {
@@ -72,7 +78,7 @@ void MemoryManager::printMem() {
 	std::string output = "----start---- = 0";
 
 	MemoryBlock* currentBlock = this->_head;
-	for (int i = 0; i < this->_maxMemory; i++) {
+	for (int i = 0; i < MemoryManager::maxMemory; i++) {
 		if (currentBlock->process != "") {
 			if (!currentBlock->isFree && currentBlock->process != lastProcess) {
 				lastProcess = currentBlock->process;
@@ -94,7 +100,7 @@ void MemoryManager::printMem() {
 		+ "Number of processes in memory: " + std::to_string(uniqueCtr) + "\n"
 		+ "Total external fragmentation in KB: " + std::to_string(externalFragmentation) + "\n"
 		+ "\n"
-		+ "-----end----- = " + std::to_string(this->_maxMemory) + "\n"
+		+ "-----end----- = " + std::to_string(MemoryManager::maxMemory) + "\n"
 		+ "\n"
 		+ output;
 	std::cout << output << std::endl;
