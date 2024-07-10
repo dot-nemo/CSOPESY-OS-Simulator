@@ -77,25 +77,25 @@ void MainConsole::run() {
 			this->_initialized = true;
 			this->_conman->newConsole("MARQUEE_CONSOLE", std::make_shared<MarqueeConsole>(144));
 
-			Config schedConfig = Config();
-			schedConfig.initialize();
-			Scheduler::initialize(schedConfig.getNumCpu(), schedConfig.getBatchProcessFreq(), schedConfig.getMinIns(), schedConfig.getMaxIns());
+			Config config = Config();
+			config.initialize();
+			Scheduler::initialize(config.getNumCpu(), config.getBatchProcessFreq(), config.getMinIns(), config.getMaxIns(), config.getMinMemProc(), config.getMaxMemProc());
 
 			Scheduler* sched = Scheduler::get();
 
 			this->_conman->_scheduler = sched;
 
-			PrintCommand::setMsDelay(schedConfig.getDelaysPerExec() * 1000);
+			PrintCommand::setMsDelay(config.getDelaysPerExec() * 1000);
 
-			std::string schedType = schedConfig.getScheduler();
+			std::string schedType = config.getScheduler();
 			if (schedType == "fcfs") {
-				sched->startFCFS(schedConfig.getDelaysPerExec());
+				sched->startFCFS(config.getDelaysPerExec());
 			}
 			else if (schedType == "sjf") {
-				sched->startSJF(schedConfig.getDelaysPerExec(), schedConfig.isPreemptive());
+				sched->startSJF(config.getDelaysPerExec(), config.isPreemptive());
 			}
 			else if (schedType == "rr") {
-				sched->startRR(schedConfig.getDelaysPerExec(), schedConfig.getQuantumCycle());
+				sched->startRR(config.getDelaysPerExec(), config.getQuantumCycle());
 			}
 
 		}

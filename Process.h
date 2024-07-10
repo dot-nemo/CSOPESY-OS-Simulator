@@ -13,7 +13,7 @@
 
 class Process {
 public:
-    Process(std::string name, std::uniform_int_distribution<int> commandDistr);
+    Process(std::string name, std::uniform_int_distribution<int> commandDistr, std::uniform_int_distribution<int> memoryDistr);
     ~Process() = default;
 
     void execute();
@@ -43,6 +43,8 @@ private:
     int _cpuCoreID = -1;
     time_t _arrivalTime = time(nullptr);
     time_t _finishTime = time(nullptr);
+
+    int _requiredMemory;
 };
 
 #endif // !PROCESS_H

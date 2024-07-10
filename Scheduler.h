@@ -20,7 +20,7 @@ public:
     void startRR(int delay, int quantumCycles);
     void stop();
     void destroy();
-    static void initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns);
+    static void initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns, int minMemProc, int maxMemProc);
     void addProcess(std::shared_ptr<Process> process);
     void schedulerTest();
     void schedulerTestStop();
@@ -46,6 +46,8 @@ private:
     float batchProcessFreq;
     int minIns;
     int maxIns;
+    int _minMemProc;
+    int _maxMemProc;
 
     bool _testRunning = false;
     bool running = false;

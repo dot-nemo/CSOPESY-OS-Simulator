@@ -11,6 +11,7 @@
 
 #include "CPU.h"
 #include "Process.h"
+#include <random>
 
 Scheduler::Scheduler() {
 
@@ -22,7 +23,7 @@ Scheduler* Scheduler::get() {
 	return _ptr;
 }
 
-void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns) {
+void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns, int minMemProc, int maxMemProc) {
     _ptr = new Scheduler();
     for (int i = 0; i < cpuCount; i++) {
         _ptr->_cpuList.push_back(std::make_shared<CPU>());
@@ -30,6 +31,8 @@ void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int
     _ptr->batchProcessFreq = batchProcessFreq;
     _ptr->minIns = minIns;
     _ptr->maxIns = maxIns;
+    _ptr->_minMemProc = minMemProc;
+    _ptr->_maxMemProc = maxMemProc;
 }
 
 void Scheduler::startFCFS(int delay) {
@@ -146,8 +149,9 @@ void Scheduler::schedulerTest() {
 void Scheduler::schedulerRun() {
     std::cout << "Started adding processes." << std::endl;
     while (this->_testRunning) {
-        std::uniform_int_distribution<int>  distr(this->minIns, this->maxIns);
-        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), distr);
+        std::uniform_int_distribution<int>  commandDistr(this->minIns, this->maxIns);
+        std::uniform_int_distribution<int>  memDistr(this->_minMemProc, this->_maxMemProc);
+        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), commandDistr, memDistr);
         this->addProcess(process);
         std::this_thread::sleep_for(std::chrono::milliseconds(int(this->batchProcessFreq * 1000)));
     }

@@ -11,7 +11,7 @@
 
 typedef std::string String;
 
-Process::Process(String name, std::uniform_int_distribution<int> commandDistr) : _name(name) {
+Process::Process(String name, std::uniform_int_distribution<int> commandDistr, std::uniform_int_distribution<int> memoryDistr) : _name(name) {
     this->_pid = Process::nextID;
     Process::nextID++;
     std::random_device rand_dev;
@@ -24,6 +24,7 @@ Process::Process(String name, std::uniform_int_distribution<int> commandDistr) :
             )
         );
     }
+    this->_requiredMemory = memoryDistr(generator);
 }
 
 void Process::execute() {
