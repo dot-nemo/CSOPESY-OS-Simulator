@@ -8,7 +8,7 @@
 
 struct MemoryBlock {
     std::string process = "";
-    bool is_free = true;
+    bool isFree = true;
     MemoryBlock* next;
 };
 

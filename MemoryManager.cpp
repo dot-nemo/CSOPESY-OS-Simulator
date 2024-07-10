@@ -2,6 +2,8 @@
 #include "MemoryManager.h"
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <ctime>
 
 MemoryManager::MemoryManager(int maxMemory) : _maxMemory(maxMemory) {
 	this->_head = new MemoryBlock();
@@ -16,7 +18,7 @@ bool MemoryManager::allocate(std::string process, int requiredMem) {
 	MemoryBlock* currentBlock = this->_head;
 	int ctr = 0;
 	for (int i = 0; i < this->_maxMemory; i++) {
-		if (currentBlock != nullptr && currentBlock->is_free) {
+		if (currentBlock != nullptr && currentBlock->isFree) {
 			ctr++;
 		}
 		else {
@@ -29,7 +31,7 @@ bool MemoryManager::allocate(std::string process, int requiredMem) {
 			}
 			for (int j = 0; j < requiredMem; j++) {
 				currentBlock->process = process;
-				currentBlock->is_free = false;
+				currentBlock->isFree = false;
 				currentBlock = currentBlock->next;
 			}
 			return true;
@@ -43,21 +45,59 @@ void MemoryManager::deallocate(std::string process) {
 	MemoryBlock* currentBlock = this->_head;
 	for (int i = 0; i < this->_maxMemory; i++) {
 		if (currentBlock->process == process) {
-			currentBlock->is_free = true;
+			currentBlock->isFree = true;
 			currentBlock->process = "";
 		}
 		currentBlock = currentBlock->next;
-		if (currentBlock->is_free) break;
+		if (currentBlock->isFree) break;
 	}
 }
 
 void MemoryManager::printMem() {
+	//std::ofstream out("csopesy-log.txt");
+	//std::streambuf* coutbuf = std::cout.rdbuf(); //save old buf
+	//std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+
+	auto timestamp = time(nullptr);
+	struct tm timeInfo;
+	localtime_s(&timeInfo, &timestamp);
+	char buffer[80];
+	strftime(buffer, sizeof(buffer), "Timestamp: (%D %r)", &timeInfo);
+
+	//std::cout << buffer << std::endl;
+
+	int uniqueCtr = 0;
+	int externalFragmentation = 0;
+	std::string lastProcess = "";
+	std::string output = "----start---- = 0";
+
 	MemoryBlock* currentBlock = this->_head;
 	for (int i = 0; i < this->_maxMemory; i++) {
-		std::cout << i
-			<< "\t" << currentBlock->is_free
-			<< " " << currentBlock->process
-			<< std::endl;
+		if (currentBlock->process != "") {
+			if (!currentBlock->isFree && currentBlock->process != lastProcess) {
+				lastProcess = currentBlock->process;
+				uniqueCtr++;
+				output = std::to_string(i) + "\n\n" + output;
+			}
+			if (currentBlock->next == nullptr || currentBlock->next->process != lastProcess) {
+				output = std::to_string(i) + "\n" + lastProcess + "\n" + output;
+			}
+		}
+		else {
+			externalFragmentation++;
+		}
 		currentBlock = currentBlock->next;
 	}
+	
+	//std::cout << buffer + "Number of processes in memory: " + output << std::endl;
+	output = std::string(buffer) + "\n"
+		+ "Number of processes in memory: " + std::to_string(uniqueCtr) + "\n"
+		+ "Total external fragmentation in KB: " + std::to_string(externalFragmentation) + "\n"
+		+ "\n"
+		+ "-----end----- = " + std::to_string(this->_maxMemory) + "\n"
+		+ "\n"
+		+ output;
+	std::cout << output << std::endl;
+
+	//std::cout.rdbuf(coutbuf); //reset to standard output again
 }
