@@ -86,7 +86,7 @@ void MemoryManager::printMem() {
 				output = std::to_string(i) + "\n\n" + output;
 			}
 			if (currentBlock->next == nullptr || currentBlock->next->process != lastProcess) {
-				output = std::to_string(i) + "\n" + lastProcess + "\n" + output;
+				output = std::to_string(i + 1) + "\n" + lastProcess + "\n" + output;
 			}
 		}
 		else {
