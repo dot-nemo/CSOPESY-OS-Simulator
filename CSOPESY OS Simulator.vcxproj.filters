@@ -29,8 +29,8 @@
     <ClCompile Include="PrintCommand.cpp">
       <Filter>Source Files\Process\Command\PrintCommand</Filter>
     </ClCompile>
-    <ClCompile Include="InitScheduler.cpp">
-      <Filter>Source Files\Process\Scheduler\Initialize</Filter>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source Files\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,8 +64,8 @@
     <ClInclude Include="PrintCommand.h">
       <Filter>Source Files\Process\Command\PrintCommand</Filter>
     </ClInclude>
-    <ClInclude Include="InitScheduler.h">
-      <Filter>Source Files\Process\Scheduler\Initialize</Filter>
+    <ClInclude Include="Config.h">
+      <Filter>Source Files\Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -105,8 +105,8 @@
     <Filter Include="Source Files\Process\Command\PrintCommand">
       <UniqueIdentifier>{df95cf72-cfb8-4be5-b440-f5384c76dc5b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Process\Scheduler\Initialize">
-      <UniqueIdentifier>{bc8ac3b8-bbb8-49e2-a195-b978ad1fb796}</UniqueIdentifier>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{006dfd05-c282-4684-a043-3ca5f71aef6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

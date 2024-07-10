@@ -10,7 +10,7 @@
 #include <fstream>
 #include "Scheduler.h"
 #include "MarqueeConsole.h"
-#include "InitScheduler.h"
+#include "Config.h"
 #include "PrintCommand.h"
 #include <random>
 
@@ -77,7 +77,7 @@ void MainConsole::run() {
 			this->_initialized = true;
 			this->_conman->newConsole("MARQUEE_CONSOLE", std::make_shared<MarqueeConsole>(144));
 
-			InitScheduler schedConfig = InitScheduler();
+			Config schedConfig = Config();
 			schedConfig.initialize();
 			Scheduler::initialize(schedConfig.getNumCpu(), schedConfig.getBatchProcessFreq(), schedConfig.getMinIns(), schedConfig.getMaxIns());
 

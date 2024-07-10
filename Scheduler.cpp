@@ -1,5 +1,5 @@
 #include "Scheduler.h"
-#include "InitScheduler.h"
+#include "Config.h"
 
 #include <ctime>
 #include <chrono>
@@ -64,7 +64,7 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
-    if (InitScheduler::_scheduler == "sjf") {
+    if (Config::_scheduler == "sjf") {
         this->_readyQueueSJF.push(process);
     }
     else {

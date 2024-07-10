@@ -22,7 +22,7 @@
     <ClCompile Include="AConsole.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="CPU.cpp" />
-    <ClCompile Include="InitScheduler.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="MarqueeConsole.cpp" />
@@ -34,7 +34,7 @@
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
     <ClInclude Include="ConsoleManager.h" />
-    <ClInclude Include="InitScheduler.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="MainConsole.h" />
     <ClInclude Include="MarqueeConsole.h" />
     <ClInclude Include="CPU.h" />
