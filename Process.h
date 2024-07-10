@@ -26,6 +26,7 @@ public:
     int getBurst() { return this->getCommandListSize() - this->getCommandCounter(); };
     time_t getArrivalTime() const { return _arrivalTime; };
     time_t getFinishTime() { return _finishTime; };
+    int getRequiredMemory() { return _requiredMemory; };
 
     void setCPUCoreID(int cpuCoreID);
     void setFinishTime() { this->_finishTime = time(nullptr); };
