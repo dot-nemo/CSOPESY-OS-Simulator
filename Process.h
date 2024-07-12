@@ -22,9 +22,9 @@ public:
 
     int getID() const { return _pid; };
     std::string getName() { std::lock_guard<std::mutex> lock(mtx); return _name; };
-    int getCommandCounter() const { return _commandCounter; };
-    int getCommandListSize() const { return _commandList.size(); };
-    int getBurst() { return this->getCommandListSize() - this->getCommandCounter(); };
+    int getCommandCounter() { std::lock_guard<std::mutex> lock(mtx); return _commandCounter; };
+    int getCommandListSize() { std::lock_guard<std::mutex> lock(mtx); return _commandList.size(); };
+    int getBurst() { std::lock_guard<std::mutex> lock(mtx); return this->getCommandListSize() - this->getCommandCounter(); };
     time_t getArrivalTime() const { return _arrivalTime; };
     time_t getFinishTime() { return _finishTime; };
     int getRequiredMemory() { return _requiredMemory; };
