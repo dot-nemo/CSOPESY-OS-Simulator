@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Process.h"
+#include <mutex>
 
 
 class CPU {
@@ -23,9 +24,14 @@ public:
     void stop() { this->_stopFlag = true; };
     bool isReady() const { return _ready; };
     void setReady() { this->_ready = true; };
+    static void setMsDelay(int delay) { CPU::msDelay = delay; };
 
 private:
     void run();
+    void execute();
+
+    std::mutex mtx;
+    static int msDelay;
 
     static int nextID;
     int _id;
