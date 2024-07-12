@@ -1,18 +1,21 @@
-#include "AConsole.h"
-#include "ConsoleManager.h"
-#include "MainConsole.h"
+
 #include <cstdlib>
+#include <fstream> // in use
 #include <iostream>
 #include <memory>
-#include <sstream>
+#include <sstream> // in use
 #include <string>
 #include <vector>
-#include <fstream>
-#include "Scheduler.h"
+
+#include "AConsole.h"
+#include "Config.h"
+#include "ConsoleManager.h"
+#include "Cpu.h"
+#include "MainConsole.h"
 #include "MarqueeConsole.h"
-#include "InitScheduler.h"
+#include "MemoryManager.h"
 #include "PrintCommand.h"
-#include <random>
+#include "Scheduler.h"
 
 #define SPACE " "
 
@@ -66,6 +69,9 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE"), _co
 	this->_commandMap["scheduler-stop"] = [conman](argType arguments) {
 		conman->_scheduler->schedulerTestStop();
 	};
+	this->_commandMap["memory"] = [conman](argType arguments) {
+		conman->_scheduler->printMem();
+	};
 }
 
 void MainConsole::run() {
@@ -77,25 +83,27 @@ void MainConsole::run() {
 			this->_initialized = true;
 			this->_conman->newConsole("MARQUEE_CONSOLE", std::make_shared<MarqueeConsole>(144));
 
-			InitScheduler schedConfig = InitScheduler();
-			schedConfig.initialize();
-			Scheduler::initialize(schedConfig.getNumCpu(), schedConfig.getBatchProcessFreq(), schedConfig.getMinIns(), schedConfig.getMaxIns());
+			Config config = Config();
+			config.initialize();
+			MemoryManager::setMaxMemory(config.getMaxMem());
+			Scheduler::initialize(config.getNumCpu(), config.getBatchProcessFreq(), config.getMinIns(), config.getMaxIns(), config.getMinMemProc(), config.getMaxMemProc());
 
 			Scheduler* sched = Scheduler::get();
 
 			this->_conman->_scheduler = sched;
 
-			PrintCommand::setMsDelay(schedConfig.getDelaysPerExec() * 1000);
+			PrintCommand::setMsDelay(0);
+			CPU::setMsDelay(config.getDelaysPerExec() * 1000);
 
-			std::string schedType = schedConfig.getScheduler();
+			std::string schedType = config.getScheduler();
 			if (schedType == "fcfs") {
-				sched->startFCFS(schedConfig.getDelaysPerExec());
+				sched->startFCFS(config.getDelaysPerExec());
 			}
 			else if (schedType == "sjf") {
-				sched->startSJF(schedConfig.getDelaysPerExec(), schedConfig.isPreemptive());
+				sched->startSJF(config.getDelaysPerExec(), config.isPreemptive());
 			}
 			else if (schedType == "rr") {
-				sched->startRR(schedConfig.getDelaysPerExec(), schedConfig.getQuantumCycle());
+				sched->startRR(config.getDelaysPerExec(), config.getQuantumCycle());
 			}
 
 		}

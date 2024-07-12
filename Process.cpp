@@ -7,36 +7,12 @@
 #include <windows.h>
 
 #include "PrintCommand.h"
+#include <mutex>
 #include <random>
 
 typedef std::string String;
 
-Process::Process(String name, std::uniform_int_distribution<int> commandDistr) : _name(name) {
-    //const char* dirPath = "output";
-
-    //DWORD attribs = GetFileAttributesA(dirPath);
-    //if (attribs == INVALID_FILE_ATTRIBUTES || !(attribs & FILE_ATTRIBUTE_DIRECTORY)) {
-    //    CreateDirectoryA(dirPath, NULL);
-    //}
-
-    //String filename = ".\\output\\" + this->_name + ".txt";
-    //std::ofstream output;
-    //output.open(filename, std::ios::out);
-    //if (output.is_open()) {
-    //    output << "Process name: " << this->_name << std::endl
-    //        << "Logs:" << std::endl
-    //        << std::endl;
-    //    output.close();
-    //}
-    //if (filler) {
-    //    for (int i = 0; i < 100; i++) {
-    //        this->_commandList.push_back(
-    //            std::make_shared<PrintCommand>(
-    //                "Hello world from " + this->_name + "!", this->_pid
-    //            )
-    //        );
-    //    }
-    //}
+Process::Process(String name, std::uniform_int_distribution<int> commandDistr, std::uniform_int_distribution<int> memoryDistr) : _name(name) {
     this->_pid = Process::nextID;
     Process::nextID++;
     std::random_device rand_dev;
@@ -49,9 +25,11 @@ Process::Process(String name, std::uniform_int_distribution<int> commandDistr) :
             )
         );
     }
+    this->_requiredMemory = memoryDistr(generator);
 }
 
 void Process::execute() {
+    std::lock_guard<std::mutex> lock(mtx);
     if (!this->hasFinished()) {
         this->_commandList.at(_commandCounter)->execute(this->_cpuCoreID, ".\\output\\" + this->_name + ".txt");
         this->_commandCounter++;

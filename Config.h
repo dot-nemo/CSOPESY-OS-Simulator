@@ -1,16 +1,16 @@
-#ifndef INITSCHEDULER_H
-#define INITSCHEDULER_H
+#ifndef CONFIG_H
+#define CONFIG_H
 #include "Scheduler.h"
 
 #include <string>
 
 using namespace std;
 
-class InitScheduler
+class Config
 {
 public:
-	InitScheduler();
-	~InitScheduler();
+	Config();
+	~Config();
 	void initialize();
     
     int getNumCpu() const {
@@ -41,6 +41,18 @@ public:
         return _maxIns;
     }
 
+    int getMaxMem() const {
+        return _maxMem;
+    }
+
+    int getMinMemProc() const {
+        return _minMemProc;
+    }
+
+    int getMaxMemProc() const {
+        return _maxMemProc;
+    }
+
     float getDelaysPerExec() const {
         return _delaysPerExec;
     }
@@ -56,10 +68,13 @@ private:
     float _batchProcessFreq;
     int _minIns;
     int _maxIns;
+    int _maxMem;
+    int _minMemProc;
+    int _maxMemProc;
     float _delaysPerExec;
     bool running = false;
 
     friend class Scheduler;
 };
 
-#endif
+#endif // !CONFIG_H

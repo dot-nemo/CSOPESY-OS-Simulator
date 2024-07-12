@@ -8,24 +8,26 @@
 #include <vector>
 
 #include "ICommand.h"
+#include <mutex>
 #include <random>
 
 
 class Process {
 public:
-    Process(std::string name, std::uniform_int_distribution<int> commandDistr);
+    Process(std::string name, std::uniform_int_distribution<int> commandDistr, std::uniform_int_distribution<int> memoryDistr);
     ~Process() = default;
 
     void execute();
     bool hasFinished();
 
     int getID() const { return _pid; };
-    std::string getName() const { return _name; };
-    int getCommandCounter() const { return _commandCounter; };
-    int getCommandListSize() const { return _commandList.size(); };
-    int getBurst() { return this->getCommandListSize() - this->getCommandCounter(); };
+    std::string getName() { std::lock_guard<std::mutex> lock(mtx); return _name; };
+    int getCommandCounter() { std::lock_guard<std::mutex> lock(mtx); return _commandCounter; };
+    int getCommandListSize() { std::lock_guard<std::mutex> lock(mtx); return _commandList.size(); };
+    int getBurst() { std::lock_guard<std::mutex> lock(mtx); return this->getCommandListSize() - this->getCommandCounter(); };
     time_t getArrivalTime() const { return _arrivalTime; };
     time_t getFinishTime() { return _finishTime; };
+    int getRequiredMemory() { return _requiredMemory; };
 
     void setCPUCoreID(int cpuCoreID);
     void setFinishTime() { this->_finishTime = time(nullptr); };
@@ -36,6 +38,8 @@ public:
     static int nextID;
 
 private:
+    std::mutex mtx;
+
     int _pid;
     std::string _name;
     std::vector<std::shared_ptr<ICommand>> _commandList;
@@ -43,6 +47,8 @@ private:
     int _cpuCoreID = -1;
     time_t _arrivalTime = time(nullptr);
     time_t _finishTime = time(nullptr);
+
+    int _requiredMemory;
 };
 
 #endif // !PROCESS_H
