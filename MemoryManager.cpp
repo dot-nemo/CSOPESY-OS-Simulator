@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <sstream>
 
 int MemoryManager::maxMemory = 0;
 
@@ -59,7 +60,7 @@ void MemoryManager::setMaxMemory(int maxMemory) {
 	MemoryManager::maxMemory = maxMemory;
 }
 
-void MemoryManager::printMem() {
+void MemoryManager::printMem(int qq) {
 	// TODO: MAKE THIS PRINT TO A FILE
 
 	auto timestamp = time(nullptr);
@@ -98,5 +99,14 @@ void MemoryManager::printMem() {
 		+ "-----end----- = " + std::to_string(MemoryManager::maxMemory) + "\n"
 		+ "\n"
 		+ output;
-	std::cout << output << std::endl;
+
+	std::string filename = "memory_stamp_" + std::to_string(qq) + ".txt";
+	std::ofstream outFile(filename);
+	if (outFile.is_open()) {
+		outFile << output;
+		outFile.close();
+	}
+	else {
+		std::cerr << "Unable to open file for writing" << std::endl;
+	}
 }

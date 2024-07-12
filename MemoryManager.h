@@ -22,7 +22,7 @@ public:
 
     static void setMaxMemory(int maxMemory);
     
-    void printMem();
+    void printMem(int qq);
 
 private:
     static int maxMemory;
