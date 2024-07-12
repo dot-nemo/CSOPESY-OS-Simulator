@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "PrintCommand.h"
+#include <mutex>
 #include <random>
 
 typedef std::string String;
@@ -28,6 +29,7 @@ Process::Process(String name, std::uniform_int_distribution<int> commandDistr, s
 }
 
 void Process::execute() {
+    std::lock_guard<std::mutex> lock(mtx);
     if (!this->hasFinished()) {
         this->_commandList.at(_commandCounter)->execute(this->_cpuCoreID, ".\\output\\" + this->_name + ".txt");
         this->_commandCounter++;

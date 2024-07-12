@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ICommand.h"
+#include <mutex>
 #include <random>
 
 
@@ -20,7 +21,7 @@ public:
     bool hasFinished();
 
     int getID() const { return _pid; };
-    std::string getName() const { return _name; };
+    std::string getName() { std::lock_guard<std::mutex> lock(mtx); return _name; };
     int getCommandCounter() const { return _commandCounter; };
     int getCommandListSize() const { return _commandList.size(); };
     int getBurst() { return this->getCommandListSize() - this->getCommandCounter(); };
@@ -37,6 +38,8 @@ public:
     static int nextID;
 
 private:
+    std::mutex mtx;
+
     int _pid;
     std::string _name;
     std::vector<std::shared_ptr<ICommand>> _commandList;
