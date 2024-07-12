@@ -23,11 +23,10 @@ void CPU::setProcess(std::shared_ptr<Process> process) {
 void CPU::run() {
     this->_stopFlag = false;
     while (!this->_stopFlag) {
-        if (this->_process != nullptr) {
+        if (this->_process != nullptr && !this->_process->hasFinished()) {
             this->_process->setCPUCoreID(this->_id);
             this->_process->execute();
             if (this->_process->hasFinished()) {
-                this->setProcess(nullptr);
                 this->_ready = true;
             }
         }
