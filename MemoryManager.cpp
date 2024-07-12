@@ -100,8 +100,6 @@ void MemoryManager::printMem(int qq) {
 		+ "\n"
 		+ output;
 
-	std::cout << output << std::endl;
-
 	std::string filename = "memory_stamp_" + std::to_string(qq) + ".txt";
 	std::ofstream outFile(filename);
 	if (outFile.is_open()) {
