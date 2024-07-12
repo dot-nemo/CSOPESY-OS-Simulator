@@ -2,12 +2,12 @@
 
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
-#include <string>
 #include <memory>
 #include <queue>
 #include <vector>
 
 #include "CPU.h"
+#include "MemoryManager.h"
 #include "Process.h"
 
 using namespace std;
@@ -26,6 +26,8 @@ public:
     void schedulerTestStop();
     
     void printStatus();
+    void printMem();
+
 private:
     Scheduler();
     ~Scheduler() = default;
@@ -42,6 +44,7 @@ private:
     vector<shared_ptr<CPU>> _cpuList;
     vector<shared_ptr<Process>> _processList;
     priority_queue<shared_ptr<Process>> _readyQueueSJF;
+    MemoryManager _memMan;
 
     float batchProcessFreq;
     int minIns;

@@ -1,17 +1,17 @@
-#include "Scheduler.h"
 #include "Config.h"
+#include "Scheduler.h"
 
-#include <ctime>
 #include <chrono>
+#include <ctime>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <string>
 #include <thread>
-#include <limits.h>
 
 #include "CPU.h"
+#include "MemoryManager.h"
 #include "Process.h"
-#include <random>
 
 Scheduler::Scheduler() {
 
@@ -33,6 +33,7 @@ void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int
     _ptr->maxIns = maxIns;
     _ptr->_minMemProc = minMemProc;
     _ptr->_maxMemProc = maxMemProc;
+    _ptr->_memMan = MemoryManager();
 }
 
 void Scheduler::startFCFS(int delay) {
@@ -138,6 +139,10 @@ void Scheduler::printStatus() {
         std::cout << "-";
     }
     std::cout << std::endl;
+}
+
+void Scheduler::printMem() {
+    this->_memMan.printMem();
 }
 
 void Scheduler::schedulerTest() {
@@ -251,6 +256,7 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->getProcess() != nullptr) {
                     // Push current process back to ready queue
+                    _memMan.deallocate(cpu->getProcessName());
                     this->_readyQueue.push(cpu->getProcess());
                     cpu->setProcess(nullptr);
                     cpu->setReady();
@@ -264,10 +270,23 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
             if (cpu->isReady() && !this->_readyQueue.empty()) {
-                cpu->setProcess(this->_readyQueue.front());
-                this->_readyQueue.pop();
-                this->running = true;
-                start = std::chrono::steady_clock::now(); // Reset start time for the new process
+                if (cpu->getProcess() != nullptr) {
+                    _memMan.deallocate(cpu->getProcessName());
+                }
+                std::shared_ptr<Process> process = this->_readyQueue.front();
+                int requiredMemory = process->getRequiredMemory();
+                std::string processName = process->getName();
+
+                if (_memMan.allocate(processName, requiredMemory)) {
+                    cpu->setProcess(process);
+                    this->_readyQueue.pop();
+                    this->running = true;
+                    start = std::chrono::steady_clock::now(); // Reset start time for the new process
+                }
+                else {
+                    this->_readyQueue.pop();
+                    this->_readyQueue.push(process);
+                }
             }
         }
 
