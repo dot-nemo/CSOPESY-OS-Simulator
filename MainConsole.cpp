@@ -10,6 +10,7 @@
 #include "AConsole.h"
 #include "Config.h"
 #include "ConsoleManager.h"
+#include "Cpu.h"
 #include "MainConsole.h"
 #include "MarqueeConsole.h"
 #include "MemoryManager.h"
@@ -91,7 +92,8 @@ void MainConsole::run() {
 
 			this->_conman->_scheduler = sched;
 
-			PrintCommand::setMsDelay(config.getDelaysPerExec() * 1000);
+			PrintCommand::setMsDelay(0);
+			CPU::setMsDelay(config.getDelaysPerExec() * 1000);
 
 			std::string schedType = config.getScheduler();
 			if (schedType == "fcfs") {

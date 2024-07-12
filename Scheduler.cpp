@@ -269,10 +269,11 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
         // Assign processes to CPUs
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
+            if (cpu->getProcess() != nullptr && cpu->getProcess()->hasFinished()) {
+                _memMan.deallocate(cpu->getProcessName());
+                cpu->setProcess(nullptr);
+            }
             if (cpu->isReady() && !this->_readyQueue.empty()) {
-                if (cpu->getProcess() != nullptr) {
-                    _memMan.deallocate(cpu->getProcessName());
-                }
                 std::shared_ptr<Process> process = this->_readyQueue.front();
                 int requiredMemory = process->getRequiredMemory();
                 std::string processName = process->getName();
@@ -281,12 +282,12 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
                     cpu->setProcess(process);
                     this->_readyQueue.pop();
                     this->running = true;
-                    start = std::chrono::steady_clock::now(); // Reset start time for the new process
                 }
                 else {
                     this->_readyQueue.pop();
                     this->_readyQueue.push(process);
                 }
+                start = std::chrono::steady_clock::now(); // Reset start time for the new process
             }
         }
 
