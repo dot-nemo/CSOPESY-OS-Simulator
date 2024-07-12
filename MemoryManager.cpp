@@ -60,17 +60,13 @@ void MemoryManager::setMaxMemory(int maxMemory) {
 }
 
 void MemoryManager::printMem() {
-	//std::ofstream out("csopesy-log.txt");
-	//std::streambuf* coutbuf = std::cout.rdbuf(); //save old buf
-	//std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+	// TODO: MAKE THIS PRINT TO A FILE
 
 	auto timestamp = time(nullptr);
 	struct tm timeInfo;
 	localtime_s(&timeInfo, &timestamp);
 	char buffer[80];
 	strftime(buffer, sizeof(buffer), "Timestamp: (%D %r)", &timeInfo);
-
-	//std::cout << buffer << std::endl;
 
 	int uniqueCtr = 0;
 	int externalFragmentation = 0;
@@ -95,7 +91,6 @@ void MemoryManager::printMem() {
 		currentBlock = currentBlock->next;
 	}
 	
-	//std::cout << buffer + "Number of processes in memory: " + output << std::endl;
 	output = std::string(buffer) + "\n"
 		+ "Number of processes in memory: " + std::to_string(uniqueCtr) + "\n"
 		+ "Total external fragmentation in KB: " + std::to_string(externalFragmentation) + "\n"
@@ -104,6 +99,4 @@ void MemoryManager::printMem() {
 		+ "\n"
 		+ output;
 	std::cout << output << std::endl;
-
-	//std::cout.rdbuf(coutbuf); //reset to standard output again
 }
