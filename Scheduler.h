@@ -51,6 +51,7 @@ private:
     int maxIns;
     int _minMemProc;
     int _maxMemProc;
+    int _cycleCount;
 
     bool _testRunning = false;
     bool running = false;

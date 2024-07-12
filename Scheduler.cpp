@@ -142,7 +142,7 @@ void Scheduler::printStatus() {
 }
 
 void Scheduler::printMem() {
-    this->_memMan.printMem();
+    this->_memMan.printMem(this->_cycleCount);
 }
 
 void Scheduler::schedulerTest() {
@@ -246,12 +246,15 @@ void Scheduler::runSJF(float delay, bool preemptive) { // SJF
 
 void Scheduler::runRR(float delay, int quantumCycles) { // RR
     auto start = std::chrono::steady_clock::now();
+    this->_cycleCount = 0;
     while (this->running) {
         auto now = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
 
         // Check if quantum cycle limit exceeded
+
         if (elapsed > quantumCycles) {
+            this->printMem();
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->getProcess() != nullptr) {
@@ -264,6 +267,7 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
                 }
             }
             start = std::chrono::steady_clock::now(); // Reset start time for new cycle
+            this->_cycleCount++;
         }
 
         // Assign processes to CPUs
