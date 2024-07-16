@@ -12,6 +12,13 @@
 #include <mutex>
 
 using namespace std;
+
+struct compare {
+    bool operator()(shared_ptr<Process> a, shared_ptr<Process> b) {
+        return a->getBurst() > b->getBurst();
+    }
+};
+
 class Scheduler {
 public:
     static Scheduler* get();
@@ -46,7 +53,7 @@ private:
     queue<shared_ptr<Process>> _readyQueue;
     vector<shared_ptr<CPU>> _cpuList;
     vector<shared_ptr<Process>> _processList;
-    priority_queue<shared_ptr<Process>> _readyQueueSJF;
+    priority_queue<shared_ptr<Process>, std::vector<shared_ptr<Process>>, compare> _readyQueueSJF;
     MemoryManager _memMan;
 
     float batchProcessFreq;
