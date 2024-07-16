@@ -24,7 +24,7 @@ public:
     std::string getName() { std::lock_guard<std::mutex> lock(mtx); return _name; };
     int getCommandCounter() { std::lock_guard<std::mutex> lock(mtx); return _commandCounter; };
     int getCommandListSize() { std::lock_guard<std::mutex> lock(mtx); return _commandList.size(); };
-    int getBurst() { std::lock_guard<std::mutex> lock(mtx); return this->getCommandListSize() - this->getCommandCounter(); };
+    int getBurst() { return this->getCommandListSize() - this->getCommandCounter(); };
     time_t getArrivalTime() const { return _arrivalTime; };
     time_t getFinishTime() { return _finishTime; };
     int getRequiredMemory() { return _requiredMemory; };
