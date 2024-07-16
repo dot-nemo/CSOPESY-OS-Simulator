@@ -9,6 +9,7 @@
 #include "CPU.h"
 #include "MemoryManager.h"
 #include "Process.h"
+#include <mutex>
 
 using namespace std;
 class Scheduler {
@@ -31,6 +32,8 @@ public:
 private:
     Scheduler();
     ~Scheduler() = default;
+
+    std::mutex mtx;
 
     void runFCFS(float delay); // FCFS
     void runSJF(float delay, bool preemptive); // SJF

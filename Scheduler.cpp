@@ -68,6 +68,7 @@ void Scheduler::destroy() {
 }
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
+    std::lock_guard<std::mutex> lock(this->mtx);
     if (Config::_scheduler == "sjf") {
         this->_readyQueueSJF.push(process);
     }
@@ -78,6 +79,7 @@ void Scheduler::addProcess(std::shared_ptr<Process> process) {
 }
 
 void Scheduler::printStatus() {
+    std::lock_guard<std::mutex> lock(this->mtx);
     int cpuReadyCount = 0;
     for (std::shared_ptr<CPU> cpu : this->_cpuList) {
         if (cpu->isReady()) {
@@ -191,34 +193,25 @@ void Scheduler::runFCFS(float delay) { // FCFS
 }
 
 void Scheduler::runSJF(float delay, bool preemptive) { // SJF
+    std::unique_lock<std::mutex> lock(this->mtx);
+    lock.unlock();
     if (preemptive) {
         while (this->running) {
+            lock.lock();
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
-                if (cpu->isReady()) {
+                std::shared_ptr<Process> oldProcess = cpu->getProcess();
+                cpu->setProcess(nullptr);
+
+                if (oldProcess != nullptr && !oldProcess->hasFinished()) this->_readyQueueSJF.push(oldProcess);
+
                     if (!this->_readyQueueSJF.empty()) {
-                        cpu->setProcess(this->_readyQueueSJF.top());
+                    std::shared_ptr<Process> newProcess = this->_readyQueueSJF.top();
                         this->_readyQueueSJF.pop();
-                        this->running = true;
+                    cpu->setProcess(newProcess);
                     }
                 }
-                else {
-                    if (this->running == true && !this->_readyQueueSJF.empty()) {
-                        if (cpu->getProcess()->getBurst() > this->_readyQueueSJF.top()->getBurst()) {
-                            std::chrono::duration<float> duration(delay);
-                            std::this_thread::sleep_for(duration);
-                            this->_readyQueueSJF.push(cpu->getProcess());
-                            cpu->setProcess(this->_readyQueueSJF.top());
-                            this->_readyQueueSJF.pop();
-                        }
-                    }
-                    //if (this->running == false) {
-                    //    std::chrono::duration<float> duration(delay);
-                    //    std::this_thread::sleep_for(duration);
-                    //    this->running = true;
-                    //}
-                }
-            }
+            lock.unlock();
         }
     }
     else {
