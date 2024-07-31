@@ -4,6 +4,8 @@
 
 #include <string>
 #include <unordered_map>
+#include "Process.h"
+#include <memory>
 
 
 struct MemoryBlock {
@@ -17,8 +19,8 @@ public:
     MemoryManager();
     ~MemoryManager() = default;
 
-    bool allocate(std::string process, int requiredMem);
-    void deallocate(std::string process);
+    bool allocate(std::shared_ptr<Process> process);
+    void deallocate(std::shared_ptr<Process> process);
 
     static void setMaxMemory(int maxMemory);
     

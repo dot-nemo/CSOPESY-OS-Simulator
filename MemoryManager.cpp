@@ -4,6 +4,8 @@
 #include <fstream>
 #include <ctime>
 #include <sstream>
+#include <memory>
+#include "Process.h"
 
 int MemoryManager::maxMemory = 0;
 
@@ -16,7 +18,9 @@ MemoryManager::MemoryManager() {
 	}
 }
 
-bool MemoryManager::allocate(std::string process, int requiredMem) {
+bool MemoryManager::allocate(std::shared_ptr<Process> process) {
+	std::string processName = process->getName();
+	int requiredMem = process->getRequiredMemory();
 	MemoryBlock* currentBlock = this->_head;
 	int ctr = 0;
 	for (int i = 0; i < MemoryManager::maxMemory; i++) {
@@ -32,7 +36,7 @@ bool MemoryManager::allocate(std::string process, int requiredMem) {
 				currentBlock = currentBlock->next;
 			}
 			for (int j = 0; j < requiredMem; j++) {
-				currentBlock->process = process;
+				currentBlock->process = processName;
 				currentBlock->isFree = false;
 				currentBlock = currentBlock->next;
 			}
@@ -43,13 +47,14 @@ bool MemoryManager::allocate(std::string process, int requiredMem) {
     return false;
 }
 
-void MemoryManager::deallocate(std::string process) {
+void MemoryManager::deallocate(std::shared_ptr<Process> process) {
+	std::string processName = process->getName();
 	MemoryBlock* currentBlock = this->_head;
 	for (int i = 0; i < MemoryManager::maxMemory; i++) {
-		if (currentBlock->process == process) {
+		if (currentBlock->process == processName) {
 			currentBlock->isFree = true;
 			currentBlock->process = "";
-			if (currentBlock->next->process != process) break;
+			if (currentBlock->next->process != processName) break;
 		}
 		currentBlock = currentBlock->next;
 	}
