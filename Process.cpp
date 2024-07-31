@@ -26,6 +26,11 @@ Process::Process(String name, std::uniform_int_distribution<int> commandDistr, s
         );
     }
     this->_requiredMemory = memoryDistr(generator);
+    int power = 1;
+    while (power < this->_requiredMemory) {
+        power *= 2;
+    }
+    this->_requiredMemory = power;
 }
 
 void Process::execute() {
