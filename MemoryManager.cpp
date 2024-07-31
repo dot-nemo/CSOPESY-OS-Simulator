@@ -1,4 +1,3 @@
-#include "Memory.h"
 #include "MemoryManager.h"
 #include <string>
 #include <iostream>
@@ -99,14 +98,5 @@ void MemoryManager::printMem(int qq) {
 		+ "-----end----- = " + std::to_string(MemoryManager::maxMemory) + "\n"
 		+ "\n"
 		+ output;
-
-	std::string filename = "memory_stamp_" + std::to_string(qq) + ".txt";
-	std::ofstream outFile(filename);
-	if (outFile.is_open()) {
-		outFile << output;
-		outFile.close();
-	}
-	else {
-		std::cerr << "Unable to open file for writing" << std::endl;
-	}
+	std::cout << output << std::endl;
 }
