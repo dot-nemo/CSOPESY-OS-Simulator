@@ -247,7 +247,6 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
         // Check if quantum cycle limit exceeded
 
         if (elapsed > quantumCycles) {
-            this->printMem();
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->getProcess() != nullptr) {
