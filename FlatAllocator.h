@@ -6,13 +6,10 @@
 #include "Process.h"
 
 #include <memory>
+#include <vector>
+#include <utility>
+#include <string>
 
-
-struct MemoryBlock {
-    std::string process = "";
-    bool isFree = true;
-    MemoryBlock* next;
-};
 
 class FlatAllocator : public IAllocator {
 public:
@@ -25,8 +22,10 @@ public:
     void printMem() override;
 
 private:
+    void readBackingStore(std::shared_ptr<Process> process);
+    void writeBackingStore(std::shared_ptr<Process> process);
     int _maxMemory;
-    MemoryBlock* _head;
+    std::vector<std::pair<std::shared_ptr<Process>, std::pair<int, int>>> _memory;
 };
 
 #endif //!FLATALLOCATOR_H

@@ -6,56 +6,74 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <utility>
+#include <cstdlib> 
+#include <fstream>
+#include <unordered_map>
+#include <sstream>
 
 
 FlatAllocator::FlatAllocator(int maxMemory) : _maxMemory(maxMemory) {
-	this->_head = new MemoryBlock();
-	MemoryBlock* currentBlock = this->_head;
-	for (int i = 1; i < this->_maxMemory; i++) {
-		currentBlock->next = new MemoryBlock();
-		currentBlock = currentBlock->next;
-	}
 }
 
 bool FlatAllocator::allocate(std::shared_ptr<Process> process) {
-	std::string processName = process->getName();
 	int requiredMem = process->getRequiredMemory();
-	MemoryBlock* currentBlock = this->_head;
-	int ctr = 0;
-	for (int i = 0; i < this->_maxMemory; i++) {
-		if (currentBlock != nullptr && currentBlock->isFree) {
-			ctr++;
-		}
-		else {
-			ctr = 0;
-		}
-		if (ctr == requiredMem) {
-			currentBlock = this->_head;
-			for (int j = 0; j < i - requiredMem + 1; j++) {
-				currentBlock = currentBlock->next;
+	this->readBackingStore(process);
+	if (this->_memory.size() == 0) {
+		this->_memory.push_back(std::make_pair(process, std::make_pair(0, requiredMem)));
+		return true;
+	}
+	else {
+		for (size_t i = 0; i < this->_memory.size(); i++) {
+			if (this->_memory.at(i).first->getName() == process->getName()) {
+				return true;
 			}
-			for (int j = 0; j < requiredMem; j++) {
-				currentBlock->process = processName;
-				currentBlock->isFree = false;
-				currentBlock = currentBlock->next;
-			}
+		}
+		if (this->_memory.at(0).second.first >= requiredMem) {
+			this->_memory.insert(this->_memory.begin(),
+				std::make_pair(process,
+					std::make_pair(0, requiredMem)));
 			return true;
 		}
-		currentBlock = currentBlock->next;
+		for (int retryLimit = 0; retryLimit < 5; retryLimit++) {
+			int ctr = 0;
+			int index = -1;
+			for (size_t i = 0; i < this->_memory.size(); i++) {
+				// check if blocks are not connected aka 0 space between
+				if (i == this->_memory.size() - 1) {
+					ctr = this->_maxMemory - this->_memory.at(i).second.second;
+				}
+				else {
+					ctr = this->_memory.at(i + 1).second.first - this->_memory.at(i).second.second;
+				}
+				if (ctr >= requiredMem) {
+					this->_memory.insert(this->_memory.begin() + i + 1,
+						std::make_pair(process,
+							std::make_pair(this->_memory.at(i).second.second,
+								this->_memory.at(i).second.second + requiredMem)
+						)
+					);
+					return true;
+				}
+			}
+			if (this->_memory.size() > 0) {
+				int randRemoveIdx = rand() % this->_memory.size();
+				if (this->_memory.at(randRemoveIdx).first->getCPUCoreID() == -1) {
+					this->writeBackingStore(this->_memory.at(randRemoveIdx).first);
+					this->_memory.erase(this->_memory.begin() + randRemoveIdx);
+				}
+			}
+		}
 	}
 	return false;
 }
 
 void FlatAllocator::deallocate(std::shared_ptr<Process> process) {
-	std::string processName = process->getName();
-	MemoryBlock* currentBlock = this->_head;
-	for (int i = 0; i < this->_maxMemory; i++) {
-		if (currentBlock->process == processName) {
-			currentBlock->isFree = true;
-			currentBlock->process = "";
-			if (currentBlock->next->process != processName) break;
+	this->readBackingStore(process);
+	for (size_t i = 0; i < this->_memory.size(); i++) {
+		if (this->_memory.at(i).first->getName() == process->getName()) {
+			this->_memory.erase(this->_memory.begin() + i);
 		}
-		currentBlock = currentBlock->next;
 	}
 }
 
@@ -66,12 +84,18 @@ void FlatAllocator::printMem() {
 	char buffer[80];
 	strftime(buffer, sizeof(buffer), "Timestamp: (%D %r)", &timeInfo);
 
-	int uniqueCtr = 0;
+	int uniqueCtr = this->_memory.size();
 	int externalFragmentation = 0;
 	std::string lastProcess = "";
 	std::string output = "----start---- = 0";
+	int total = 0;
+	for (size_t i = 0; i < this->_memory.size(); i++) {
+		output = std::to_string(this->_memory.at(i).second.first) + "\n\n" + output;
+		output = std::to_string(this->_memory.at(i).second.second) + "\n" + this->_memory.at(i).first->getName() + "\n" + output;
+		total += this->_memory.at(i).second.second - this->_memory.at(i).second.first;
+	}
 
-	MemoryBlock* currentBlock = this->_head;
+	/*MemoryBlock* currentBlock = this->_head;
 	for (int i = 0; i < this->_maxMemory; i++) {
 		if (currentBlock->process != "") {
 			if (!currentBlock->isFree && currentBlock->process != lastProcess) {
@@ -87,14 +111,76 @@ void FlatAllocator::printMem() {
 			externalFragmentation++;
 		}
 		currentBlock = currentBlock->next;
-	}
+	}*/
 
 	output = std::string(buffer) + "\n"
 		+ "Number of processes in memory: " + std::to_string(uniqueCtr) + "\n"
-		+ "Total external fragmentation in KB: " + std::to_string(externalFragmentation) + "\n"
+		+ "Total external fragmentation in KB: " + std::to_string(this->_maxMemory - total) + "\n"
 		+ "\n"
 		+ "-----end----- = " + std::to_string(this->_maxMemory) + "\n"
 		+ "\n"
 		+ output;
 	std::cout << output << std::endl;
+}
+
+void FlatAllocator::readBackingStore(std::shared_ptr<Process> process) {
+	std::ifstream backingStoreFile(".pagefile");
+	if (!backingStoreFile.is_open()) {
+		std::cerr << "Failed to open the file." << std::endl;
+		return;
+	}
+	std::unordered_map<std::string, std::pair<int, int>> backingStore;
+	std::string line, key, ctr, mem;
+
+	while (std::getline(backingStoreFile, line)) {
+        std::istringstream iss(line);
+        iss >> key >> ctr >> mem;
+		backingStore[key] = std::make_pair(std::stoi(ctr), std::stoi(mem));
+	}
+
+	backingStoreFile.close();
+
+	if (backingStore.find(process->getName()) != backingStore.end()) {
+		backingStore.erase(backingStore.find(process->getName()));
+	}
+
+	std::ofstream saveFile(".pagefile", std::ios::trunc);
+
+	if (saveFile.is_open()) {
+		for (const auto& pair : backingStore) {
+			saveFile << pair.first << ' ' << pair.second.first << ' ' << pair.second.second << '\n';
+		}
+		saveFile.close();
+	}
+}
+
+void FlatAllocator::writeBackingStore(std::shared_ptr<Process> process) {
+	std::ifstream backingStoreFile(".pagefile");
+	if (!backingStoreFile.is_open()) {
+		std::cerr << "Failed to open the file." << std::endl;
+		return;
+	}
+	std::unordered_map<std::string, std::pair<int, int>> backingStore;
+	std::string line, key, ctr, mem;
+
+	while (std::getline(backingStoreFile, line)) {
+		std::istringstream iss(line);
+		iss >> key >> ctr >> mem;
+		backingStore[key] = std::make_pair(std::stoi(ctr), std::stoi(mem));
+	}
+
+	backingStoreFile.close();
+
+	if (backingStore.find(process->getName()) == backingStore.end()) {
+		backingStore[process->getName()] = std::make_pair(process->getCommandCounter(),
+			process->getRequiredMemory());
+		std::ofstream saveFile(".pagefile", std::ios::trunc);
+
+		if (saveFile.is_open()) {
+			for (const auto& pair : backingStore) {
+				saveFile << pair.first << ' ' << pair.second.first << ' ' << pair.second.second << '\n';
+			}
+			saveFile.close();
+		}
+	}
 }

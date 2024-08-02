@@ -19,6 +19,9 @@ CPU::CPU() {
 
 void CPU::setProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(this->mtx);
+    if (this->_process != nullptr) {
+        this->_process->setCPUCoreID(-1);
+    }
     this->_process = process;
     this->_ready = process == nullptr;
 }

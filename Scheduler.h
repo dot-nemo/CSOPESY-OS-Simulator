@@ -70,6 +70,7 @@ private:
     bool _testRunning = false;
     bool running = false;
     friend class ConsoleManager;
+    friend class FlatAllocator;
 };
 
 #endif // SCHEDULER_H

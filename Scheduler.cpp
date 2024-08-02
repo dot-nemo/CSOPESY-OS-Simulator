@@ -253,7 +253,7 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->getProcess() != nullptr) {
                     // Push current process back to ready queue
-                    _memMan->deallocate(cpu->getProcess());
+                    //_memMan->deallocate(cpu->getProcess()); // TO UNCOMMENT
                     this->_readyQueue.push(cpu->getProcess());
                     cpu->setProcess(nullptr);
                     cpu->setReady();
@@ -270,11 +270,13 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
             if (cpu->getProcess() != nullptr && cpu->getProcess()->hasFinished()) {
                 _memMan->deallocate(cpu->getProcess());
                 cpu->setProcess(nullptr);
+                cpu->setReady();
             }
             if (cpu->isReady() && !this->_readyQueue.empty()) {
                 std::shared_ptr<Process> process = this->_readyQueue.front();
 
                 if (_memMan->allocate(process)) {
+                    process->setCPUCoreID(cpu->getId());
                     cpu->setProcess(process);
                     this->_readyQueue.pop();
                     this->running = true;

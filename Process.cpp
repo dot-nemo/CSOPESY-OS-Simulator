@@ -13,6 +13,7 @@
 typedef std::string String;
 
 Process::Process(String name, std::uniform_int_distribution<int> commandDistr, std::uniform_int_distribution<int> memoryDistr) : _name(name) {
+    std::lock_guard<std::mutex> lock(mtx);
     this->_pid = Process::nextID;
     Process::nextID++;
     std::random_device rand_dev;
@@ -49,6 +50,7 @@ bool Process::hasFinished() {
 }
 
 void Process::setCPUCoreID(int cpuCoreID) {
+    std::lock_guard<std::mutex> lock(mtx);
     this->_cpuCoreID = cpuCoreID;
 }
 

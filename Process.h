@@ -28,6 +28,7 @@ public:
     time_t getArrivalTime() const { return _arrivalTime; };
     time_t getFinishTime() { return _finishTime; };
     int getRequiredMemory() { return _requiredMemory; };
+    int getCPUCoreID() { std::lock_guard<std::mutex> lock(mtx); return _cpuCoreID; };
 
     void setCPUCoreID(int cpuCoreID);
     void setFinishTime() { this->_finishTime = time(nullptr); };
