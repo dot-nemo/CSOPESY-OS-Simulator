@@ -13,9 +13,7 @@
 #include "MemoryManager.h"
 #include "Process.h"
 
-Scheduler::Scheduler() {
-
-}
+Scheduler::Scheduler() {}
 
 Scheduler* Scheduler::_ptr = nullptr;
 
@@ -23,7 +21,11 @@ Scheduler* Scheduler::get() {
 	return _ptr;
 }
 
-void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns, int minMemProc, int maxMemProc) {
+void Scheduler::initialize(int cpuCount, 
+    float batchProcessFreq,
+    int minIns, int maxIns, 
+    int minMemProc, int maxMemProc,
+    int maxMem, int minPage, int maxPage) {
     _ptr = new Scheduler();
     for (int i = 0; i < cpuCount; i++) {
         _ptr->_cpuList.push_back(std::make_shared<CPU>());
@@ -33,7 +35,7 @@ void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int
     _ptr->maxIns = maxIns;
     _ptr->_minMemProc = minMemProc;
     _ptr->_maxMemProc = maxMemProc;
-    _ptr->_memMan = MemoryManager();
+    _ptr->_memMan = new MemoryManager(maxMem, minPage, maxPage);
 }
 
 void Scheduler::startFCFS(int delay) {
@@ -144,7 +146,7 @@ void Scheduler::printStatus() {
 }
 
 void Scheduler::printMem() {
-    this->_memMan.printMem(this->_cycleCount);
+    this->_memMan->printMem(this->_cycleCount);
 }
 
 void Scheduler::schedulerTest() {
@@ -251,7 +253,7 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->getProcess() != nullptr) {
                     // Push current process back to ready queue
-                    _memMan.deallocate(cpu->getProcess());
+                    _memMan->deallocate(cpu->getProcess());
                     this->_readyQueue.push(cpu->getProcess());
                     cpu->setProcess(nullptr);
                     cpu->setReady();
@@ -266,13 +268,13 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
             if (cpu->getProcess() != nullptr && cpu->getProcess()->hasFinished()) {
-                _memMan.deallocate(cpu->getProcess());
+                _memMan->deallocate(cpu->getProcess());
                 cpu->setProcess(nullptr);
             }
             if (cpu->isReady() && !this->_readyQueue.empty()) {
                 std::shared_ptr<Process> process = this->_readyQueue.front();
 
-                if (_memMan.allocate(process)) {
+                if (_memMan->allocate(process)) {
                     cpu->setProcess(process);
                     this->_readyQueue.pop();
                     this->running = true;

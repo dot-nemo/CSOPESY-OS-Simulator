@@ -85,8 +85,11 @@ void MainConsole::run() {
 
 			Config config = Config();
 			config.initialize();
-			MemoryManager::setMaxMemory(config.getMaxMem());
-			Scheduler::initialize(config.getNumCpu(), config.getBatchProcessFreq(), config.getMinIns(), config.getMaxIns(), config.getMinMemProc(), config.getMaxMemProc());
+			Scheduler::initialize(config.getNumCpu(), 
+				config.getBatchProcessFreq(), 
+				config.getMinIns(), config.getMaxIns(), 
+				config.getMinMemProc(), config.getMaxMemProc(),
+				config.getMaxMem(), config.getMinPageProc(), config.getMaxPageProc());
 
 			Scheduler* sched = Scheduler::get();
 

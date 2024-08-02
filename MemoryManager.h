@@ -6,29 +6,20 @@
 #include <unordered_map>
 #include "Process.h"
 #include <memory>
-
-
-struct MemoryBlock {
-    std::string process = "";
-    bool isFree = true;
-    MemoryBlock* next;
-};
+#include "IAllocator.h"
 
 class MemoryManager {
 public:
-    MemoryManager();
+    MemoryManager(int maxMemory, int minPage, int maxPage);
     ~MemoryManager() = default;
 
     bool allocate(std::shared_ptr<Process> process);
     void deallocate(std::shared_ptr<Process> process);
-
-    static void setMaxMemory(int maxMemory);
     
     void printMem(int qq);
 
 private:
-    static int maxMemory;
-    MemoryBlock* _head;
+    IAllocator* _allocator;
 };
 
 #endif // !MEMORYMANAGER_H
