@@ -19,10 +19,10 @@ public:
     FlatAllocator(int maxMemory);
     ~FlatAllocator() = default;
 
-    bool allocate(std::shared_ptr<Process> process);
-    void deallocate(std::shared_ptr<Process> process);
+    bool allocate(std::shared_ptr<Process> process) override;
+    void deallocate(std::shared_ptr<Process> process) override;
 
-    void printMem();
+    void printMem() override;
 
 private:
     int _maxMemory;
