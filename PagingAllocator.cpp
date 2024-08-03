@@ -103,3 +103,40 @@ void PagingAllocator::printMem() {
 	}
 	std::cout << "----start---- = 0" << std::endl; 
 }
+
+void PagingAllocator::printProcesses() {
+	int requiredMem = Process::setRequiredMemory(0, 0);
+	int requiredPages = Process::getRequiredPages();
+	int pageSize = requiredMem / requiredPages;
+
+	std::vector<std::string> memProcNames;
+	std::vector<int> memFrameIdx;
+
+	for (auto it = _pageTable.begin(); it != _pageTable.end(); ++it) {
+		std::string process = it->first;
+		memProcNames.push_back(process);
+	}
+
+	std::cout << "Memory Usage: " << this->_pageTable.size() * requiredMem << " / " << this->_maxMemory << std::endl;
+
+	std::cout << "Memory Util: " << (1.0 * (this->_pageTable.size() * requiredMem) / this->_maxMemory) * 100 << "%" << std::endl;
+
+	std::cout << std::endl;
+
+	for (int i = 0; i < 48; i++) {
+		std::cout << "=";
+	}
+	std::cout << std::endl;
+
+	std::cout << "Running processes and memory usage: " << std::endl;
+
+	for (int i = 0; i < 48; i++) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
+
+	for (size_t i = 0; i < memProcNames.size(); i++)
+	{
+		std::cout << memProcNames[i] << " " << requiredPages * pageSize << std::endl;
+	}
+}

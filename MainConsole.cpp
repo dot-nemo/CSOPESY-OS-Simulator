@@ -89,7 +89,7 @@ void MainConsole::run() {
 			Config config = Config();
 			config.initialize();
 
-			if (config.getMinPageProc() != config.getMaxPageProc()) {
+			if (config.getMinPageProc() != 1 && config.getMaxPageProc() != 1) {
 				Process::setRequiredMemory(config.getMinMemProc(), config.getMaxMemProc());
 			}
 

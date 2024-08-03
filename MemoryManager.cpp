@@ -10,7 +10,7 @@
 #include "PagingAllocator.h"
 
 MemoryManager::MemoryManager(int maxMemory, int minPage, int maxPage) {
-	if (minPage == maxPage == 1) {
+	if (minPage == 1 && maxPage == 1) {
 		this->_allocator = new FlatAllocator(maxMemory);
 	}
 	else {
