@@ -40,10 +40,14 @@ public:
     void printStatus();
     void printMem();
     void processSmi();
+    void vmstat();
 
 private:
     Scheduler();
     ~Scheduler() = default;
+
+    int getTotalTicks();
+    int getInactiveTicks();
 
     std::mutex mtx;
 

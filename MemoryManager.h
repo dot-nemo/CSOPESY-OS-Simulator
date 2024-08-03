@@ -17,6 +17,7 @@ public:
     void deallocate(std::shared_ptr<Process> process);
     
     void printMem(int qq);
+    void vmstat();
 
     IAllocator* getAllocator() {
         return this->_allocator;

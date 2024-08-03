@@ -140,3 +140,6 @@ void PagingAllocator::printProcesses() {
 		std::cout << memProcNames[i] << " " << requiredPages * pageSize << std::endl;
 	}
 }
+
+void PagingAllocator::vmstat() {
+}

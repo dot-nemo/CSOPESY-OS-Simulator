@@ -30,3 +30,8 @@ void MemoryManager::deallocate(std::shared_ptr<Process> process) {
 void MemoryManager::printMem(int qq) {
 	this->_allocator->printMem();
 }
+
+void MemoryManager::vmstat() {
+	this->_allocator->vmstat();
+}
+
