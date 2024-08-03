@@ -10,7 +10,7 @@
 #include "PagingAllocator.h"
 
 MemoryManager::MemoryManager(int maxMemory, int minPage, int maxPage) {
-	if (minPage == maxPage == 1) {
+	if (minPage == 1 && maxPage == 1) {
 		this->_allocator = new FlatAllocator(maxMemory);
 	}
 	else {
@@ -30,3 +30,8 @@ void MemoryManager::deallocate(std::shared_ptr<Process> process) {
 void MemoryManager::printMem(int qq) {
 	this->_allocator->printMem();
 }
+
+void MemoryManager::vmstat() {
+	this->_allocator->vmstat();
+}
+

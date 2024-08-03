@@ -15,6 +15,22 @@
 
 Scheduler::Scheduler() {}
 
+int Scheduler::getTotalTicks() {
+    int total = 0;
+    for (size_t i = 0; i < this->_cpuList.size(); i++) {
+        total += _cpuList[i]->getTotalTicks();
+    }
+    return total;
+}
+
+int Scheduler::getInactiveTicks() {
+    int total = 0;
+    for (size_t i = 0; i < this->_cpuList.size(); i++) {
+        total += _cpuList[i]->getInactiveTicks();
+    }
+    return total;
+}
+
 Scheduler* Scheduler::_ptr = nullptr;
 
 Scheduler* Scheduler::get() {
@@ -325,6 +341,10 @@ void Scheduler::processSmi() {
     std::cout << "CPU-Util: " << cpuUsage << "%" << std::endl;
 
     this->_memMan->getAllocator()->printProcesses();
+}
+
+void Scheduler::vmstat() {
+    this->_memMan->vmstat();
 }
 
 

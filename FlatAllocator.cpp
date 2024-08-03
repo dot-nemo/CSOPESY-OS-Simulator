@@ -11,6 +11,9 @@
 #include <fstream>
 #include <unordered_map>
 #include <sstream>
+#include <iomanip>
+
+#include "Scheduler.h"
 
 
 FlatAllocator::FlatAllocator(int maxMemory) : _maxMemory(maxMemory) {
@@ -223,4 +226,48 @@ void FlatAllocator::printProcesses() {
 		std::cout << "-";
 	}
 	std::cout << std::endl;
+}
+
+void FlatAllocator::vmstat() {
+	int used = 0;
+	if (_memory.size() > 0) {
+		used = _memory[_memory.size() - 1].second.second - _memory[0].second.first;
+	}
+	int active = 0;
+	for (size_t i = 0; i < this->_memory.size(); i++) {
+		active += this->_memory.at(i).second.second - this->_memory.at(i).second.first;
+	}
+
+	int totalTicks = Scheduler::get()->getTotalTicks();
+	int inactiveTicks = Scheduler::get()->getInactiveTicks();
+	int activeTicks = totalTicks - inactiveTicks;
+
+	std::unordered_map<std::string, int> statMap;
+	statMap["K total memory"] = _maxMemory * 1024;
+	statMap["K used memory"] = active * 1024;
+	statMap["K active memory"] = active * 1024;
+	statMap["idle cpu ticks"] = inactiveTicks;
+	statMap["active cpu ticks"] = activeTicks;
+	statMap["total cpu ticks"] = totalTicks;
+	statMap["num paged in"] = 0;
+	statMap["num paged out"] = 0;
+	int padding = 0;
+	int temp = _maxMemory * 1024;
+	while (temp != 0) {
+		temp /= 10;
+		padding++;
+	}
+	std::vector<std::string> keys;
+	keys.push_back("K total memory");
+	keys.push_back("K used memory");
+	keys.push_back("K active memory");
+	keys.push_back("idle cpu ticks");
+	keys.push_back("active cpu ticks");
+	keys.push_back("total cpu ticks");
+	keys.push_back("num paged in");
+	keys.push_back("num paged out");
+	for (size_t i = 0; i < keys.size(); i++) {
+		std::string key = keys[i];
+		std::cout << std::setw(padding + 5) << statMap[key] << " " << key << std::endl;
+	}
 }

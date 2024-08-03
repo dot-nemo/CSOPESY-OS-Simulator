@@ -37,11 +37,15 @@ void CPU::run() {
 
 void CPU::execute() {
     std::lock_guard<std::mutex> lock(this->mtx);
+    this->_totalTicks++;
     if (this->_process != nullptr && !this->_process->hasFinished()) {
         this->_process->setCPUCoreID(this->_id);
         this->_process->execute();
         if (this->_process->hasFinished()) {
             this->_ready = true;
         }
+    }
+    else {
+        this->_inactiveTicks++;
     }
 }

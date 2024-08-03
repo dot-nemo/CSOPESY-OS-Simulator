@@ -22,6 +22,7 @@ public:
     void printMem() override;
 
     void printProcesses() override;
+    void vmstat() override;
 
 private:
     void readBackingStore(std::shared_ptr<Process> process);
