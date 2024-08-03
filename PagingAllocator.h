@@ -4,6 +4,7 @@
 
 #include "IAllocator.h"
 #include <queue>
+#include <unordered_map>
 
 // PROCESS {CTR, MEMORY NEEDED, FRAME NUMBER}
 typedef std::pair<std::shared_ptr<Process>, std::tuple<int, int, int>> Page;

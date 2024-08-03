@@ -32,7 +32,7 @@ bool PagingAllocator::allocate(std::shared_ptr<Process> process) {
 	//	if (_freeFrameList.size() >= requiredPages)
 
 	//}
- //   return true;
+    return true;
 }
 
 void PagingAllocator::deallocate(std::shared_ptr<Process> process) {
