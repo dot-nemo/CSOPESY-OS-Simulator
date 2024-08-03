@@ -196,10 +196,15 @@ void Scheduler::runFCFS(float delay) { // FCFS
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
             if (cpu->isReady()) {
+                if (cpu->getProcess() != nullptr && cpu->getProcess()->hasFinished()) {
+                    _memMan->deallocate(cpu->getProcess());
+                }
                 if (this->_readyQueue.size() > 0) {
-                    cpu->setProcess(this->_readyQueue.front());
-                    this->_readyQueue.pop();
-                    this->running = true;
+                    if (_memMan->allocate(this->_readyQueue.front())) {
+                        cpu->setProcess(this->_readyQueue.front());
+                        this->_readyQueue.pop();
+                        this->running = true;
+                    }
                 }
             }
             //else {
@@ -222,16 +227,24 @@ void Scheduler::runSJF(float delay, bool preemptive) { // SJF
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 std::shared_ptr<Process> oldProcess = cpu->getProcess();
+                if (oldProcess != nullptr && oldProcess->hasFinished()) {
+                    _memMan->deallocate(oldProcess);
+                }
                 cpu->setProcess(nullptr);
 
                 if (oldProcess != nullptr && !oldProcess->hasFinished()) this->_readyQueueSJF.push(oldProcess);
 
-                    if (!this->_readyQueueSJF.empty()) {
+                if (!this->_readyQueueSJF.empty()) {
                     std::shared_ptr<Process> newProcess = this->_readyQueueSJF.top();
-                        this->_readyQueueSJF.pop();
-                    cpu->setProcess(newProcess);
+                    this->_readyQueueSJF.pop();
+                    if (_memMan->allocate(newProcess)) {
+                        cpu->setProcess(newProcess);
+                    }
+                    else {
+                        this->_readyQueueSJF.push(newProcess);
                     }
                 }
+            }
             lock.unlock();
         }
     }
@@ -240,10 +253,16 @@ void Scheduler::runSJF(float delay, bool preemptive) { // SJF
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->isReady()) {
+                    if (cpu->getProcess() != nullptr && cpu->getProcess()->hasFinished()) {
+                        _memMan->deallocate(cpu->getProcess());
+                        cpu->setProcess(nullptr);
+                    }
                     if (this->_readyQueueSJF.size() > 0) {
-                        cpu->setProcess(this->_readyQueueSJF.top());
-                        this->_readyQueueSJF.pop();
-                        this->running = true;
+                        if (_memMan->allocate(this->_readyQueueSJF.top())) {
+                            cpu->setProcess(this->_readyQueueSJF.top());
+                            this->_readyQueueSJF.pop();
+                            this->running = true;
+                        }
                     }
                 }
                 //else {
