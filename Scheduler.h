@@ -78,6 +78,7 @@ private:
     bool running = false;
     friend class ConsoleManager;
     friend class FlatAllocator;
+    friend class PagingAllocator;
 };
 
 #endif // SCHEDULER_H

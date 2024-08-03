@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <utility>
 #include <queue>
+#include "Scheduler.h"
+#include <iomanip>
 
 
 #define PAGE_SIZE 4;
@@ -44,6 +46,7 @@ bool PagingAllocator::allocate(std::shared_ptr<Process> process) {
 			int nextFrame = _freeFrameList.front();
 			_freeFrameList.pop();
 			_pageTable[process->getName()].push_back(nextFrame);
+			_pagedIn++;
 		}
 		return true;
 	}
@@ -54,6 +57,7 @@ void PagingAllocator::deallocate(std::shared_ptr<Process> process) {
 	if (_pageTable.find(process->getName()) != _pageTable.end()) {
 		for (size_t i = 0; i < _pageTable[process->getName()].size(); i++) {
 			_freeFrameList.push(_pageTable[process->getName()].at(i));
+			_pagedOut++;
 		}
 		_pageTable.erase(_pageTable.find(process->getName()));
 	}
@@ -95,13 +99,22 @@ void PagingAllocator::printMem() {
 		+ "\n"
 		+ "-----end----- = " + std::to_string(this->_maxMemory) + "\n"
 		+ "\n";
-	for (size_t i = 0; i < memFrameIdx.size(); i++) {
-		std::cout << std::to_string((memFrameIdx.at(i) + 1) * pageSize) << std::endl
-			<< memProcNames.at(i) << std::endl
-			<< std::to_string(memFrameIdx.at(i) * pageSize)
+
+	std::vector<std::pair<int, std::string>> sortVector;
+	for (size_t i = 0; i < memFrameIdx.size(); ++i) {
+		sortVector.emplace_back(memFrameIdx[i], memProcNames[i]);
+	}
+
+	std::sort(sortVector.begin(), sortVector.end(), std::greater<>());
+
+
+	for (size_t i = 0; i < sortVector.size(); i++) {
+		std::cout << std::to_string((sortVector[i].first + 1) * pageSize) << std::endl
+			<< sortVector[i].second << std::endl
+			<< std::to_string(sortVector[i].first * pageSize)
 			<< std::endl << std::endl;
 	}
-	std::cout << "----start---- = 0" << std::endl; 
+	std::cout << "----start---- = 0" << std::endl;
 }
 
 void PagingAllocator::printProcesses() {
@@ -142,4 +155,62 @@ void PagingAllocator::printProcesses() {
 }
 
 void PagingAllocator::vmstat() {
+	int requiredMem = Process::setRequiredMemory(0, 0);
+	int requiredPages = Process::getRequiredPages();
+	int pageSize = requiredMem / requiredPages;
+	int used = 0;
+	int active = 0;
+	if (_pageTable.size() > 0) {
+		int first = _maxMemory;
+		int last = 0;
+		for (auto it = _pageTable.begin(); it != _pageTable.end(); ++it) {
+			std::string process = it->first;
+			for (size_t i = 0; i < it->second.size(); i++) {
+				if (it->second.at(i) != -1) {
+					if (it->second[i] * pageSize < first) {
+						first = it->second[i] * pageSize;
+					}
+					if ((it->second[i] + 1) * pageSize > last) {
+						last = (it->second[i] + 1) * pageSize;
+					}
+					active += pageSize;
+				}
+			}
+			
+		}
+		used = last - first;
+	}
+
+	int totalTicks = Scheduler::get()->getTotalTicks();
+	int inactiveTicks = Scheduler::get()->getInactiveTicks();
+	int activeTicks = totalTicks - inactiveTicks;
+
+	std::unordered_map<std::string, int> statMap;
+	statMap["K total memory"] = _maxMemory * 1024;
+	statMap["K used memory"] = active * 1024;
+	statMap["K active memory"] = active * 1024;
+	statMap["idle cpu ticks"] = inactiveTicks;
+	statMap["active cpu ticks"] = activeTicks;
+	statMap["total cpu ticks"] = totalTicks;
+	statMap["num paged in"] = _pagedIn;
+	statMap["num paged out"] = _pagedOut;
+	int padding = 0;
+	int temp = _maxMemory * 1024;
+	while (temp != 0) {
+		temp /= 10;
+		padding++;
+	}
+	std::vector<std::string> keys;
+	keys.push_back("K total memory");
+	keys.push_back("K used memory");
+	keys.push_back("K active memory");
+	keys.push_back("idle cpu ticks");
+	keys.push_back("active cpu ticks");
+	keys.push_back("total cpu ticks");
+	keys.push_back("num paged in");
+	keys.push_back("num paged out");
+	for (size_t i = 0; i < keys.size(); i++) {
+		std::string key = keys[i];
+		std::cout << std::setw(padding + 5) << statMap[key] << " " << key << std::endl;
+	}
 }

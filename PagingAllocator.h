@@ -23,6 +23,8 @@ private:
     // procName > vector(page number)[frame]
     std::unordered_map <std::string, std::vector<int>> _pageTable;
     int _maxMemory;
+    int _pagedIn = 0;
+    int _pagedOut = 0;
 };
 
 #endif //!PAGINGALLOCATOR_H
