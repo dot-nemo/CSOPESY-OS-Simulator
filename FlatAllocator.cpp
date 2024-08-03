@@ -206,6 +206,8 @@ void FlatAllocator::printProcesses() {
 
 	std::cout << "Memory Util: " << (1.0 * total / this->_maxMemory) * 100 << "%" << std::endl;
 
+	std::cout << std::endl;
+
 	for (int i = 0; i < 48; i++) {
 		std::cout << "=";
 	}
