@@ -14,6 +14,8 @@
 
 
 FlatAllocator::FlatAllocator(int maxMemory) : _maxMemory(maxMemory) {
+	std::ofstream backingStoreFile(".pagefile", std::ios::trunc);
+	backingStoreFile.close();
 }
 
 bool FlatAllocator::allocate(std::shared_ptr<Process> process) {
