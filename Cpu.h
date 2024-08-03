@@ -20,6 +20,8 @@ public:
     int getProcessCommandListSize() const { return this->_process->getCommandListSize(); };
     time_t getProcessArrivalTime() const { return this->_process->getArrivalTime(); };
     std::shared_ptr<Process> getProcess() { return this->_process; };
+    int getTotalTicks() { return this->_totalTicks; };
+    int getInactiveTicks() { return this->_inactiveTicks; };
 
     void stop() { this->_stopFlag = true; };
     bool isReady() const { return _ready; };
@@ -37,6 +39,8 @@ private:
     int _id;
     bool _ready = true;
     bool _stopFlag = false;
+    int _inactiveTicks = 0;
+    int _totalTicks = 0;
 
     std::shared_ptr<Process> _process = nullptr;
 };

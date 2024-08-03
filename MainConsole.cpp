@@ -75,6 +75,9 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE"), _co
 	this->_commandMap["process-smi"] = [conman](argType arguments) {
 		conman->_scheduler->processSmi();
 	};
+	this->_commandMap["vmstat"] = [conman](argType arguments) {
+		conman->_scheduler->vmstat();
+	};
 }
 
 void MainConsole::run() {
@@ -89,7 +92,7 @@ void MainConsole::run() {
 			Config config = Config();
 			config.initialize();
 
-			if (config.getMinPageProc() != config.getMaxPageProc()) {
+			if (config.getMinPageProc() != 1 && config.getMaxPageProc() != 1) {
 				Process::setRequiredMemory(config.getMinMemProc(), config.getMaxMemProc());
 			}
 

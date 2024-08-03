@@ -103,3 +103,9 @@ void PagingAllocator::printMem() {
 	}
 	std::cout << "----start---- = 0" << std::endl; 
 }
+
+void PagingAllocator::printProcesses() {
+}
+
+void PagingAllocator::vmstat() {
+}

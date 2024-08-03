@@ -16,9 +16,11 @@ public:
 
     void printMem() override;
     void printProcesses() override;
+    void vmstat() override;
 
 private:
     std::queue<int> _freeFrameList;
+    // procName > vector(page number)[frame]
     std::unordered_map <std::string, std::vector<int>> _pageTable;
     int _maxMemory;
 };
