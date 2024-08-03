@@ -18,6 +18,10 @@ public:
     
     void printMem(int qq);
 
+    IAllocator* getAllocator() {
+        return this->_allocator;
+    }
+
 private:
     IAllocator* _allocator;
 };

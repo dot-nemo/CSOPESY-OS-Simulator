@@ -186,3 +186,41 @@ void FlatAllocator::writeBackingStore(std::shared_ptr<Process> process) {
 		}
 	}
 }
+
+void FlatAllocator::printProcesses() {
+	int uniqueCtr = this->_memory.size();
+	int externalFragmentation = 0;
+	std::string lastProcess = "";
+	std::string output = "----start---- = 0";
+	int total = 0;
+	std::vector<std::string> processes;
+	for (size_t i = 0; i < this->_memory.size(); i++) {
+		processes.push_back(this->_memory.at(i).first->getName() + " " + std::to_string(this->_memory.at(i).second.second - this->_memory.at(i).second.first));
+		total += this->_memory.at(i).second.second - this->_memory.at(i).second.first;
+	}
+
+	std::cout << "Memory Usage: " << total << " / " << this->_maxMemory << std::endl;
+
+	std::cout << "Memory Util: " << (1.0 * total / this->_maxMemory) * 100 << "%" << std::endl;
+
+	for (int i = 0; i < 48; i++) {
+		std::cout << "=";
+	}
+	std::cout << std::endl;
+
+	std::cout << "Running processes and memory usage: " << std::endl;
+
+	for (int i = 0; i < 48; i++) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
+
+	for (int i = 0; i < processes.size(); i++) {
+		std::cout << processes[i] << std::endl;
+	}
+
+	for (int i = 0; i < 48; i++) {
+		std::cout << "-";
+	}
+	std::cout << std::endl;
+}

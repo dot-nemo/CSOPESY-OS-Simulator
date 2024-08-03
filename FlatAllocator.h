@@ -21,6 +21,8 @@ public:
 
     void printMem() override;
 
+    void printProcesses() override;
+
 private:
     void readBackingStore(std::shared_ptr<Process> process);
     void writeBackingStore(std::shared_ptr<Process> process);
