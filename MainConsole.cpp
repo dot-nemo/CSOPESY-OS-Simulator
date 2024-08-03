@@ -72,6 +72,9 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE"), _co
 	this->_commandMap["memory"] = [conman](argType arguments) {
 		conman->_scheduler->printMem();
 	};
+	this->_commandMap["process-smi"] = [conman](argType arguments) {
+		conman->_scheduler->processSmi();
+	};
 }
 
 void MainConsole::run() {

@@ -26,6 +26,7 @@ bool MemoryManager::allocate(std::shared_ptr<Process> process) {
 void MemoryManager::deallocate(std::shared_ptr<Process> process) {
 	this->_allocator->deallocate(process);
 }
+
 void MemoryManager::printMem(int qq) {
 	this->_allocator->printMem();
 }

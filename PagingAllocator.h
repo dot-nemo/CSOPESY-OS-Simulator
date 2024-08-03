@@ -18,6 +18,7 @@ public:
     void deallocate(std::shared_ptr<Process> process) override;
 
     void printMem() override;
+    void printProcesses() override;
 
 private:
     void readBackingStore(std::shared_ptr<Process> process);

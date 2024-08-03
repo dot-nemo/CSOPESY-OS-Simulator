@@ -65,3 +65,7 @@ void PagingAllocator::printMem() {
 		+ output;
 	std::cout << output << std::endl;
 }
+
+void PagingAllocator::printProcesses() {
+
+}

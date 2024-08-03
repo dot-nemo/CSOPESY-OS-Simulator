@@ -301,5 +301,30 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
     }
 }
 
+void Scheduler::processSmi() {
+    for (int i = 0; i < 48; i++) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+
+    std::cout << "| PROCESS-SMI V01.00 \t Driver Version: 01.00 |" << std::endl;
+
+    for (int i = 0; i < 48; i++) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+    
+    int cpuUse = 100 / this->_cpuList.size();
+    int cpuUsage = 0;
+    for (int i = 0; i < this->_cpuList.size(); i++) {
+        if (this->_cpuList[i]->getProcess() != nullptr) {
+            cpuUsage+= cpuUse;
+        }
+    }
+
+    std::cout << "CPU-Util: " << cpuUsage << "%" << std::endl;
+
+    this->_memMan->getAllocator()->printProcesses();
+}
 
 

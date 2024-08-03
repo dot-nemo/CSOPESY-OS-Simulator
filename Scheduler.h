@@ -39,6 +39,7 @@ public:
     
     void printStatus();
     void printMem();
+    void processSmi();
 
 private:
     Scheduler();
