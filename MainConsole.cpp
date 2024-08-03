@@ -85,6 +85,11 @@ void MainConsole::run() {
 
 			Config config = Config();
 			config.initialize();
+
+			if (config.getMinPageProc() != config.getMaxPageProc()) {
+				Process::setRequiredMemory(config.getMinMemProc(), config.getMaxMemProc());
+			}
+
 			Scheduler::initialize(config.getNumCpu(), 
 				config.getBatchProcessFreq(), 
 				config.getMinIns(), config.getMaxIns(), 

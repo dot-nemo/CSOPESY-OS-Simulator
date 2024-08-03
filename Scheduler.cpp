@@ -35,6 +35,8 @@ void Scheduler::initialize(int cpuCount,
     _ptr->maxIns = maxIns;
     _ptr->_minMemProc = minMemProc;
     _ptr->_maxMemProc = maxMemProc;
+    _ptr->_minPage = minPage;
+    _ptr->_maxPage = maxPage;
     _ptr->_memMan = new MemoryManager(maxMem, minPage, maxPage);
 }
 
@@ -157,10 +159,11 @@ void Scheduler::schedulerTest() {
 }
 
 void Scheduler::schedulerRun() {
+    std::uniform_int_distribution<int>  commandDistr(this->minIns, this->maxIns);
+    std::uniform_int_distribution<int>  memDistr(this->_minMemProc, this->_maxMemProc);
+    std::uniform_int_distribution<int>  pageDistr(this->_minPage, this->_maxPage);
     while (this->_testRunning) {
-        std::uniform_int_distribution<int>  commandDistr(this->minIns, this->maxIns);
-        std::uniform_int_distribution<int>  memDistr(this->_minMemProc, this->_maxMemProc);
-        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), commandDistr, memDistr);
+        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), commandDistr, memDistr, pageDistr);
         this->addProcess(process);
         std::this_thread::sleep_for(std::chrono::milliseconds(int(this->batchProcessFreq * 1000)));
     }

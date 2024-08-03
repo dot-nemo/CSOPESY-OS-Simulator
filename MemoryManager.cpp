@@ -7,13 +7,15 @@
 #include <memory>
 #include "Process.h"
 #include "FlatAllocator.h"
+#include "PagingAllocator.h"
 
 MemoryManager::MemoryManager(int maxMemory, int minPage, int maxPage) {
 	if (minPage == maxPage == 1) {
 		this->_allocator = new FlatAllocator(maxMemory);
 	}
 	else {
-		
+		Process::setRequiredPages(minPage, maxPage);
+		this->_allocator = new PagingAllocator(maxMemory);
 	}
 }
 
