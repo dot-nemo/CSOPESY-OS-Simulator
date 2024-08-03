@@ -12,7 +12,14 @@
 
 typedef std::string String;
 
-Process::Process(String name, std::uniform_int_distribution<int> commandDistr, std::uniform_int_distribution<int> memoryDistr) : _name(name) {
+int Process::requiredPages = -1;
+int Process::sameMemory = -1;
+
+Process::Process(String name, std::uniform_int_distribution<int> commandDistr, 
+    std::uniform_int_distribution<int> memoryDistr,
+    std::uniform_int_distribution<int> pageDistr) : _name(name) {
+
+    std::lock_guard<std::mutex> lock(mtx);
     this->_pid = Process::nextID;
     Process::nextID++;
     std::random_device rand_dev;
@@ -25,7 +32,17 @@ Process::Process(String name, std::uniform_int_distribution<int> commandDistr, s
             )
         );
     }
-    this->_requiredMemory = memoryDistr(generator);
+    if (Process::sameMemory == -1) {
+        this->_requiredMemory = memoryDistr(generator);
+        int power = 1;
+        while (power < this->_requiredMemory) {
+            power *= 2;
+        }
+        this->_requiredMemory = power;
+    }
+    else {
+        this->_requiredMemory = Process::sameMemory;
+    }
 }
 
 void Process::execute() {
@@ -43,7 +60,38 @@ bool Process::hasFinished() {
     return false;
 }
 
+int Process::setRequiredPages(int min, int max) {
+    if (Process::requiredPages == -1) {
+        std::uniform_int_distribution<int>  pageDistr(min, max);
+        std::random_device rand_dev;
+        std::mt19937 generator(rand_dev());
+        Process::requiredPages = pageDistr(generator);
+        int power = 1;
+        while (power < Process::requiredPages) {
+            power *= 2;
+        }
+        Process::requiredPages = power;
+    }
+    return Process::requiredPages;
+}
+
+int Process::setRequiredMemory(int min, int max) {
+    if (Process::sameMemory == -1) {
+        std::uniform_int_distribution<int>  memDistr(min, max);
+        std::random_device rand_dev;
+        std::mt19937 generator(rand_dev());
+        Process::sameMemory = memDistr(generator);
+        int power = 1;
+        while (power < Process::sameMemory) {
+            power *= 2;
+        }
+        Process::sameMemory = power;
+    }
+    return Process::sameMemory;
+}
+
 void Process::setCPUCoreID(int cpuCoreID) {
+    std::lock_guard<std::mutex> lock(mtx);
     this->_cpuCoreID = cpuCoreID;
 }
 

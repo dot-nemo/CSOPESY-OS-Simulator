@@ -13,8 +13,22 @@
 #include "MemoryManager.h"
 #include "Process.h"
 
-Scheduler::Scheduler() {
+Scheduler::Scheduler() {}
 
+int Scheduler::getTotalTicks() {
+    int total = 0;
+    for (size_t i = 0; i < this->_cpuList.size(); i++) {
+        total += _cpuList[i]->getTotalTicks();
+    }
+    return total;
+}
+
+int Scheduler::getInactiveTicks() {
+    int total = 0;
+    for (size_t i = 0; i < this->_cpuList.size(); i++) {
+        total += _cpuList[i]->getInactiveTicks();
+    }
+    return total;
 }
 
 Scheduler* Scheduler::_ptr = nullptr;
@@ -23,7 +37,11 @@ Scheduler* Scheduler::get() {
 	return _ptr;
 }
 
-void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int maxIns, int minMemProc, int maxMemProc) {
+void Scheduler::initialize(int cpuCount, 
+    float batchProcessFreq,
+    int minIns, int maxIns, 
+    int minMemProc, int maxMemProc,
+    int maxMem, int minPage, int maxPage) {
     _ptr = new Scheduler();
     for (int i = 0; i < cpuCount; i++) {
         _ptr->_cpuList.push_back(std::make_shared<CPU>());
@@ -33,7 +51,9 @@ void Scheduler::initialize(int cpuCount, float batchProcessFreq, int minIns, int
     _ptr->maxIns = maxIns;
     _ptr->_minMemProc = minMemProc;
     _ptr->_maxMemProc = maxMemProc;
-    _ptr->_memMan = MemoryManager();
+    _ptr->_minPage = minPage;
+    _ptr->_maxPage = maxPage;
+    _ptr->_memMan = new MemoryManager(maxMem, minPage, maxPage);
 }
 
 void Scheduler::startFCFS(int delay) {
@@ -144,7 +164,7 @@ void Scheduler::printStatus() {
 }
 
 void Scheduler::printMem() {
-    this->_memMan.printMem(this->_cycleCount);
+    this->_memMan->printMem(this->_cycleCount);
 }
 
 void Scheduler::schedulerTest() {
@@ -155,10 +175,11 @@ void Scheduler::schedulerTest() {
 }
 
 void Scheduler::schedulerRun() {
+    std::uniform_int_distribution<int>  commandDistr(this->minIns, this->maxIns);
+    std::uniform_int_distribution<int>  memDistr(this->_minMemProc, this->_maxMemProc);
+    std::uniform_int_distribution<int>  pageDistr(this->_minPage, this->_maxPage);
     while (this->_testRunning) {
-        std::uniform_int_distribution<int>  commandDistr(this->minIns, this->maxIns);
-        std::uniform_int_distribution<int>  memDistr(this->_minMemProc, this->_maxMemProc);
-        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), commandDistr, memDistr);
+        std::shared_ptr<Process> process = std::make_shared<Process>("process_" + std::to_string(Process::nextID), commandDistr, memDistr, pageDistr);
         this->addProcess(process);
         std::this_thread::sleep_for(std::chrono::milliseconds(int(this->batchProcessFreq * 1000)));
     }
@@ -247,12 +268,11 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
         // Check if quantum cycle limit exceeded
 
         if (elapsed > quantumCycles) {
-            this->printMem();
             for (int i = 0; i < this->_cpuList.size(); i++) {
                 std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
                 if (cpu->getProcess() != nullptr) {
                     // Push current process back to ready queue
-                    _memMan.deallocate(cpu->getProcessName());
+                    //_memMan->deallocate(cpu->getProcess()); // TO UNCOMMENT
                     this->_readyQueue.push(cpu->getProcess());
                     cpu->setProcess(nullptr);
                     cpu->setReady();
@@ -267,15 +287,15 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
         for (int i = 0; i < this->_cpuList.size(); i++) {
             std::shared_ptr<CPU> cpu = this->_cpuList.at(i);
             if (cpu->getProcess() != nullptr && cpu->getProcess()->hasFinished()) {
-                _memMan.deallocate(cpu->getProcessName());
+                _memMan->deallocate(cpu->getProcess());
                 cpu->setProcess(nullptr);
+                cpu->setReady();
             }
             if (cpu->isReady() && !this->_readyQueue.empty()) {
                 std::shared_ptr<Process> process = this->_readyQueue.front();
-                int requiredMemory = process->getRequiredMemory();
-                std::string processName = process->getName();
 
-                if (_memMan.allocate(processName, requiredMemory)) {
+                if (_memMan->allocate(process)) {
+                    process->setCPUCoreID(cpu->getId());
                     cpu->setProcess(process);
                     this->_readyQueue.pop();
                     this->running = true;
@@ -297,5 +317,34 @@ void Scheduler::runRR(float delay, int quantumCycles) { // RR
     }
 }
 
+void Scheduler::processSmi() {
+    for (int i = 0; i < 48; i++) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+
+    std::cout << "| PROCESS-SMI V01.00 \t Driver Version: 01.00 |" << std::endl;
+
+    for (int i = 0; i < 48; i++) {
+        std::cout << "-";
+    }
+    std::cout << std::endl;
+    
+    int cpuUse = 100 / this->_cpuList.size();
+    int cpuUsage = 0;
+    for (int i = 0; i < this->_cpuList.size(); i++) {
+        if (this->_cpuList[i]->getProcess() != nullptr) {
+            cpuUsage+= cpuUse;
+        }
+    }
+
+    std::cout << "CPU-Util: " << cpuUsage << "%" << std::endl;
+
+    this->_memMan->getAllocator()->printProcesses();
+}
+
+void Scheduler::vmstat() {
+    this->_memMan->vmstat();
+}
 
 

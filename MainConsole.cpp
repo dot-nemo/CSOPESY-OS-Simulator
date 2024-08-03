@@ -72,6 +72,12 @@ MainConsole::MainConsole(ConsoleManager* conman) : AConsole("MAIN_CONSOLE"), _co
 	this->_commandMap["memory"] = [conman](argType arguments) {
 		conman->_scheduler->printMem();
 	};
+	this->_commandMap["process-smi"] = [conman](argType arguments) {
+		conman->_scheduler->processSmi();
+	};
+	this->_commandMap["vmstat"] = [conman](argType arguments) {
+		conman->_scheduler->vmstat();
+	};
 }
 
 void MainConsole::run() {
@@ -85,8 +91,16 @@ void MainConsole::run() {
 
 			Config config = Config();
 			config.initialize();
-			MemoryManager::setMaxMemory(config.getMaxMem());
-			Scheduler::initialize(config.getNumCpu(), config.getBatchProcessFreq(), config.getMinIns(), config.getMaxIns(), config.getMinMemProc(), config.getMaxMemProc());
+
+			if (config.getMinPageProc() != 1 && config.getMaxPageProc() != 1) {
+				Process::setRequiredMemory(config.getMinMemProc(), config.getMaxMemProc());
+			}
+
+			Scheduler::initialize(config.getNumCpu(), 
+				config.getBatchProcessFreq(), 
+				config.getMinIns(), config.getMaxIns(), 
+				config.getMinMemProc(), config.getMaxMemProc(),
+				config.getMaxMem(), config.getMinPageProc(), config.getMaxPageProc());
 
 			Scheduler* sched = Scheduler::get();
 

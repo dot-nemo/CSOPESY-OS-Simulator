@@ -4,29 +4,27 @@
 
 #include <string>
 #include <unordered_map>
-
-
-struct MemoryBlock {
-    std::string process = "";
-    bool isFree = true;
-    MemoryBlock* next;
-};
+#include "Process.h"
+#include <memory>
+#include "IAllocator.h"
 
 class MemoryManager {
 public:
-    MemoryManager();
+    MemoryManager(int maxMemory, int minPage, int maxPage);
     ~MemoryManager() = default;
 
-    bool allocate(std::string process, int requiredMem);
-    void deallocate(std::string process);
-
-    static void setMaxMemory(int maxMemory);
+    bool allocate(std::shared_ptr<Process> process);
+    void deallocate(std::shared_ptr<Process> process);
     
     void printMem(int qq);
+    void vmstat();
+
+    IAllocator* getAllocator() {
+        return this->_allocator;
+    }
 
 private:
-    static int maxMemory;
-    MemoryBlock* _head;
+    IAllocator* _allocator;
 };
 
 #endif // !MEMORYMANAGER_H

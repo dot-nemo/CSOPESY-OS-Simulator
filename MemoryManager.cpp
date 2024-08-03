@@ -1,112 +1,37 @@
-#include "Memory.h"
 #include "MemoryManager.h"
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <ctime>
 #include <sstream>
+#include <memory>
+#include "Process.h"
+#include "FlatAllocator.h"
+#include "PagingAllocator.h"
 
-int MemoryManager::maxMemory = 0;
-
-MemoryManager::MemoryManager() {
-	this->_head = new MemoryBlock();
-	MemoryBlock* currentBlock = this->_head;
-	for (int i = 1; i < MemoryManager::maxMemory; i++) {
-		currentBlock->next = new MemoryBlock();
-		currentBlock = currentBlock->next;
+MemoryManager::MemoryManager(int maxMemory, int minPage, int maxPage) {
+	if (minPage == 1 && maxPage == 1) {
+		this->_allocator = new FlatAllocator(maxMemory);
+	}
+	else {
+		Process::setRequiredPages(minPage, maxPage);
+		this->_allocator = new PagingAllocator(maxMemory);
 	}
 }
 
-bool MemoryManager::allocate(std::string process, int requiredMem) {
-	MemoryBlock* currentBlock = this->_head;
-	int ctr = 0;
-	for (int i = 0; i < MemoryManager::maxMemory; i++) {
-		if (currentBlock != nullptr && currentBlock->isFree) {
-			ctr++;
-		}
-		else {
-			ctr = 0;
-		}
-		if (ctr == requiredMem) {
-			currentBlock = this->_head;
-			for (int j = 0; j < i - requiredMem + 1; j++) {
-				currentBlock = currentBlock->next;
-			}
-			for (int j = 0; j < requiredMem; j++) {
-				currentBlock->process = process;
-				currentBlock->isFree = false;
-				currentBlock = currentBlock->next;
-			}
-			return true;
-		}
-		currentBlock = currentBlock->next;
-	}
-    return false;
+bool MemoryManager::allocate(std::shared_ptr<Process> process) {
+	return this->_allocator->allocate(process);
 }
 
-void MemoryManager::deallocate(std::string process) {
-	MemoryBlock* currentBlock = this->_head;
-	for (int i = 0; i < MemoryManager::maxMemory; i++) {
-		if (currentBlock->process == process) {
-			currentBlock->isFree = true;
-			currentBlock->process = "";
-			if (currentBlock->next->process != process) break;
-		}
-		currentBlock = currentBlock->next;
-	}
-}
-
-void MemoryManager::setMaxMemory(int maxMemory) {
-	MemoryManager::maxMemory = maxMemory;
+void MemoryManager::deallocate(std::shared_ptr<Process> process) {
+	this->_allocator->deallocate(process);
 }
 
 void MemoryManager::printMem(int qq) {
-	// TODO: MAKE THIS PRINT TO A FILE
-
-	auto timestamp = time(nullptr);
-	struct tm timeInfo;
-	localtime_s(&timeInfo, &timestamp);
-	char buffer[80];
-	strftime(buffer, sizeof(buffer), "Timestamp: (%D %r)", &timeInfo);
-
-	int uniqueCtr = 0;
-	int externalFragmentation = 0;
-	std::string lastProcess = "";
-	std::string output = "----start---- = 0";
-
-	MemoryBlock* currentBlock = this->_head;
-	for (int i = 0; i < MemoryManager::maxMemory; i++) {
-		if (currentBlock->process != "") {
-			if (!currentBlock->isFree && currentBlock->process != lastProcess) {
-				lastProcess = currentBlock->process;
-				uniqueCtr++;
-				output = std::to_string(i) + "\n\n" + output;
-			}
-			if (currentBlock->next == nullptr || currentBlock->next->process != lastProcess) {
-				output = std::to_string(i + 1) + "\n" + lastProcess + "\n" + output;
-			}
-		}
-		else {
-			externalFragmentation++;
-		}
-		currentBlock = currentBlock->next;
-	}
-	
-	output = std::string(buffer) + "\n"
-		+ "Number of processes in memory: " + std::to_string(uniqueCtr) + "\n"
-		+ "Total external fragmentation in KB: " + std::to_string(externalFragmentation) + "\n"
-		+ "\n"
-		+ "-----end----- = " + std::to_string(MemoryManager::maxMemory) + "\n"
-		+ "\n"
-		+ output;
-
-	std::string filename = "memory_stamp_" + std::to_string(qq) + ".txt";
-	std::ofstream outFile(filename);
-	if (outFile.is_open()) {
-		outFile << output;
-		outFile.close();
-	}
-	else {
-		std::cerr << "Unable to open file for writing" << std::endl;
-	}
+	this->_allocator->printMem();
 }
+
+void MemoryManager::vmstat() {
+	this->_allocator->vmstat();
+}
+

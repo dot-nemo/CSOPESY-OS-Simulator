@@ -35,6 +35,12 @@
     <ClCompile Include="MemoryManager.cpp">
       <Filter>Source Files\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="FlatAllocator.cpp">
+      <Filter>Source Files\Memory\Allocator\Flat</Filter>
+    </ClCompile>
+    <ClCompile Include="PagingAllocator.cpp">
+      <Filter>Source Files\Memory\Allocator\Paging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h">
@@ -72,6 +78,15 @@
     </ClInclude>
     <ClInclude Include="MemoryManager.h">
       <Filter>Source Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="IAllocator.h">
+      <Filter>Source Files\Memory\Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatAllocator.h">
+      <Filter>Source Files\Memory\Allocator\Flat</Filter>
+    </ClInclude>
+    <ClInclude Include="PagingAllocator.h">
+      <Filter>Source Files\Memory\Allocator\Paging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +131,15 @@
     </Filter>
     <Filter Include="Source Files\Memory">
       <UniqueIdentifier>{f12e4e90-8ed5-4eb4-82a8-ac65b01546b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory\Allocator">
+      <UniqueIdentifier>{df8ac2eb-3849-42d2-9f66-5ebc0d42c902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory\Allocator\Flat">
+      <UniqueIdentifier>{8f71baa2-b80f-4cec-9e11-cbce6c193e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory\Allocator\Paging">
+      <UniqueIdentifier>{7d1004d5-ae68-465f-8c43-f2c054ede032}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

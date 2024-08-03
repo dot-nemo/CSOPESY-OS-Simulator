@@ -57,6 +57,14 @@ public:
         return _delaysPerExec;
     }
 
+    int getMinPageProc() const {
+        return _minPageProc;
+    }
+
+    int getMaxPageProc() const {
+        return _maxPageProc;
+    }
+
     bool isRunning() const {
         return running;
     }
@@ -72,6 +80,8 @@ private:
     int _minMemProc;
     int _maxMemProc;
     float _delaysPerExec;
+    int _minPageProc;
+    int _maxPageProc;
     bool running = false;
 
     friend class Scheduler;
