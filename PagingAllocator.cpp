@@ -19,23 +19,44 @@
 PagingAllocator::PagingAllocator(int maxMemory) : _maxMemory(maxMemory) {
 	std::ofstream backingStoreFile(".pagefile", std::ios::trunc);
 	backingStoreFile.close();
-	for (size_t i = 0; i < maxMemory / Process::getRequiredPages(); i++) {
+	int requiredMem = Process::setRequiredMemory(-1, -1);
+	for (size_t i = 0; i < maxMemory / (requiredMem / Process::getRequiredPages()); i++) {
 		_freeFrameList.push(i);
 	}
 }
 
 bool PagingAllocator::allocate(std::shared_ptr<Process> process) {
-	//int requiredMem = Process::setRequiredMemory(0, 0);
-	//int requiredPages = Process::getRequiredPages();
-	//int pageSize = requiredMem / requiredPages;
-	//for (size_t i = 0; i < requiredPages; i++) {
-	//	if (_freeFrameList.size() >= requiredPages)
-
-	//}
-    return true;
+	int requiredMem = Process::setRequiredMemory(0, 0);
+	int requiredPages = Process::getRequiredPages();
+	int pageSize = requiredMem / requiredPages;
+	if (_pageTable.find(process->getName()) != _pageTable.end()) {
+		for (size_t i = 0; i < _pageTable[process->getName()].size(); i++) {
+			if (_pageTable[process->getName()].at(i) < 0) {
+				int nextFrame = _freeFrameList.front();
+				_freeFrameList.pop();
+				_pageTable[process->getName()].at(i) = nextFrame;
+			}
+		}
+		return true;
+	}
+	if (_freeFrameList.size() >= requiredPages) {
+		for (size_t i = 0; i < requiredPages; i++) {
+			int nextFrame = _freeFrameList.front();
+			_freeFrameList.pop();
+			_pageTable[process->getName()].push_back(nextFrame);
+		}
+		return true;
+	}
+	return false;
 }
 
 void PagingAllocator::deallocate(std::shared_ptr<Process> process) {
+	if (_pageTable.find(process->getName()) != _pageTable.end()) {
+		for (size_t i = 0; i < _pageTable[process->getName()].size(); i++) {
+			_freeFrameList.push(_pageTable[process->getName()].at(i));
+		}
+		_pageTable.erase(_pageTable.find(process->getName()));
+	}
 }
 
 void PagingAllocator::printMem() {
@@ -45,27 +66,40 @@ void PagingAllocator::printMem() {
 	char buffer[80];
 	strftime(buffer, sizeof(buffer), "Timestamp: (%D %r)", &timeInfo);
 
-	int uniqueCtr = this->_memory.size();
-	int externalFragmentation = 0;
-	std::string lastProcess = "";
-	std::string output = "----start---- = 0";
-	int total = 0;
-	for (size_t i = 0; i < this->_memory.size(); i++) {
-		output = std::to_string(std::get<0>(this->_memory.at(i).second)) + "\n\n" + output;
-		output = std::to_string(std::get<1>(this->_memory.at(i).second)) + "\n" + this->_memory.at(i).first->getName() + " " + std::to_string(std::get<2>(this->_memory.at(i).second)) + "\n" + output;
-		total += std::get<1>(this->_memory.at(i).second) - std::get<0>(this->_memory.at(i).second);
-	}
+	int requiredMem = Process::setRequiredMemory(0, 0);
+	int requiredPages = Process::getRequiredPages();
+	int pageSize = requiredMem / requiredPages;
 
-	output = std::string(buffer) + "\n"
-		+ "Number of processes in memory: " + std::to_string(uniqueCtr) + "\n"
-		+ "Total external fragmentation in KB: " + std::to_string(this->_maxMemory - total) + "\n"
+	std::vector<std::string> memProcNames;
+	std::vector<int> memFrameIdx;
+
+	for (auto it = _pageTable.begin(); it != _pageTable.end(); ++it) {
+		std::string process = it->first;
+		for (size_t i = 0; i < it->second.size(); i++) {
+			if (it->second.at(i) != -1) {
+				int insertIdx = 0;
+				for (size_t j = 0; j < memFrameIdx.size(); j++) {
+					if (memFrameIdx.at(j) > it->second.at(i)) {
+						insertIdx = j;
+						break;
+					}
+				}
+				memFrameIdx.insert(memFrameIdx.begin() + insertIdx, it->second.at(i));
+				memProcNames.insert(memProcNames.begin() + insertIdx, process);
+			}
+		}
+	}
+	std::cout << std::string(buffer) + "\n"
+		+ "Number of processes in memory: " + std::to_string(_pageTable.size()) + "\n"
+		+ "Total external fragmentation in KB: " + std::to_string(this->_maxMemory - memFrameIdx.size() * pageSize) + "\n"
 		+ "\n"
 		+ "-----end----- = " + std::to_string(this->_maxMemory) + "\n"
-		+ "\n"
-		+ output;
-	std::cout << output << std::endl;
-}
-
-void PagingAllocator::printProcesses() {
-
+		+ "\n";
+	for (size_t i = 0; i < memFrameIdx.size(); i++) {
+		std::cout << std::to_string((memFrameIdx.at(i) + 1) * pageSize) << std::endl
+			<< memProcNames.at(i) << std::endl
+			<< std::to_string(memFrameIdx.at(i) * pageSize)
+			<< std::endl << std::endl;
+	}
+	std::cout << "----start---- = 0" << std::endl; 
 }
